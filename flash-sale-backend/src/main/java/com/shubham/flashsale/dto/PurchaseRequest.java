@@ -26,7 +26,7 @@ public class PurchaseRequest {
 
     // Getters and setters
     public Long getProductId(){return productId;}
-    public void setProductId(Long ProductId){ this.productId = productId;}
+    public void setProductId(Long productId){ this.productId = productId;}
 
     public Long getUserId(){ return userId;}
     public void setUserId(Long userId){ this.userId = userId;}
