@@ -1,0 +1,44 @@
+```
+┌──────────────────────────────────────────────────┐
+│           LOAD TESTING SCRIPT                     │
+│   (1000 threads firing concurrent requests)       │
+└────────────────┬─────────────────────────────────┘
+                 │
+                 ▼
+         ┌───────────────┐
+         │  CONTROLLER   │
+         │ /purchase     │
+         └───────┬───────┘
+                 │
+                 ▼
+         ┌───────────────┐
+         │   SERVICE     │
+         │ @Transactional│
+         └───────┬───────┘
+                 │
+                 ▼
+      ┌──────────────────────┐
+      │    REPOSITORY         │
+      │ @Lock(PESSIMISTIC)    │
+      └──────────┬────────────┘
+                 │
+                 ▼
+      ┌──────────────────────┐
+      │    POSTGRESQL         │
+      │  Product table        │
+      │  (row-level lock)     │
+      └───────────────────────┘
+
+Request Flow:
+1. Thread 1 → Controller → Service (START TX) 
+              → Repo locks Product row
+              → Check stock, decrement, commit
+              → Thread 1 success
+              
+2. Thread 2 → Controller → Service (START TX)
+              → Repo WAITS for lock
+              → Gets lock after Thread 1 commits
+              → Check stock (now 0), reject
+              → Thread 2 fails
+
+Result: Serialized access = No race condition
