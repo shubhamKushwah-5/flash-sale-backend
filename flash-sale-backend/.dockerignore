@@ -1,0 +1,25 @@
+# Maven/Java build artifacts (Docker will build its own)
+target/
+*.jar
+*.war
+*.class
+
+# Version control
+.git
+.gitignore
+
+# IDE configurations (IntelliJ, VS Code, Eclipse)
+.idea/
+*.iml
+.vscode/
+.settings/
+.project
+.classpath
+
+# Environment variables and secrets
+.env
+.env.*
+secrets.yml
+
+# Documentation
+*.md
