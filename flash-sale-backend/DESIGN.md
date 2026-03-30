@@ -89,13 +89,13 @@ Metrics to measure:
 - No overselling verified
 
 ## Technology Stack
-- Spring Boot 3.x
+- Spring Boot 3.5.2
 - Spring Data JPA
 - PostgreSQL
 - Docker
 - JUnit 5 (testing)
 
-## Future Enhancements (mention in README, don't build)
+## Future Enhancements 
 - Redis caching for stock reads
 - Message queue for async processing (Kafka/RabbitMQ)
 - Rate limiting per user

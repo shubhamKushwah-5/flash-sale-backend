@@ -160,7 +160,7 @@ public class LoadTestRunner {
     // Main mehtod to run tests
 
     public static void main(String[] args) {
-        String baseUrl = "http://localhost:8080";
+        String baseUrl = "http://localhost:8080";     //"https://flash-sale-backend-hd99.onrender.com";
         LoadTestRunner runner = new LoadTestRunner(baseUrl);
 
         System.out.println("\n" + "=".repeat(80));
@@ -227,4 +227,27 @@ public class LoadTestRunner {
 
         System.out.println("\n" + "=".repeat(80));
     }
+
+//    public static void main(String[] args) {
+//        // PRODUCTION TEST - lighter load
+//        String baseUrl = "https://flash-sale-backend-hd99.onrender.com"; // YOUR URL
+//        LoadTestRunner runner = new LoadTestRunner(baseUrl);
+//
+//        Long productId = 1L; // Product you just created
+//        int threadCount = 50;  // Only 50 threads (not 1000)
+//        int requestsPerThread = 2; // Total: 100 requests
+//
+//        System.out.println("  LIGHT PRODUCTION LOAD TEST");
+//        System.out.println("   Threads: 50");
+//        System.out.println("   Total Requests: 100");
+//        System.out.println("   Target: Product with ~100 stock");
+//
+//        LoadTestResult result = runner.runTest(
+//                productId,
+//                threadCount,
+//                requestsPerThread,
+//                true  // pessimistic
+//        );
+//        result.printResults();
+//    }
 }
