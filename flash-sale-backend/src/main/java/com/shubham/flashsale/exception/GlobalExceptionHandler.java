@@ -5,6 +5,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
+
+import org.springframework.web.servlet.resource.NoResourceFoundException;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -31,5 +36,15 @@ public class GlobalExceptionHandler {
         error.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
 
         return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+
+    // for swagger to run
+    
+    @ExceptionHandler(NoResourceFoundException.class)
+    public ResponseEntity<Void> handleNoResourceFound(NoResourceFoundException ex) {
+        // Silently return 404 for missing static resources (like CSS/JS)
+        // instead of trying to return a JSON HashMap.
+        return ResponseEntity.notFound().build();
     }
 }
