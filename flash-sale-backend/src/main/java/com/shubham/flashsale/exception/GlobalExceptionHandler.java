@@ -40,10 +40,10 @@ public class GlobalExceptionHandler {
 
 
     // for swagger to run
-    
+
     @ExceptionHandler(NoResourceFoundException.class)
     public ResponseEntity<Void> handleNoResourceFound(NoResourceFoundException ex) {
-        // Silently return 404 for missing static resources (like CSS/JS)
+        //  return 404 for missing static resources (like CSS/JS)
         // instead of trying to return a JSON HashMap.
         return ResponseEntity.notFound().build();
     }
