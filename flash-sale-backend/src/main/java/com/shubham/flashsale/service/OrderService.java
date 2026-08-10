@@ -8,8 +8,11 @@ import com.shubham.flashsale.model.Product;
 import com.shubham.flashsale.repository.OrderRepository;
 import jakarta.persistence.OptimisticLockException;
 import jakarta.transaction.Transactional;
+import org.aspectj.weaver.ast.Or;
+import org.hibernate.validator.internal.util.stereotypes.Lazy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import com.shubham.flashsale.service.RedisStockService;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -18,14 +21,22 @@ import java.util.List;
 @Service
 public class OrderService {
 
+   @Autowired
+   private OrderTransactionService orderTransactionService;
+
     @Autowired
     private OrderRepository orderRepository;
 
     @Autowired
     private ProductService productService;
 
+    @Autowired
+    private RedisStockService redisStockService;
+
     /**
      * Purchase with PESSIMISTIC locking
+     *
+     *
      * Transaction ensures atomicity of stock check + decrement + order creation
      */
 
@@ -60,6 +71,8 @@ public class OrderService {
 
     /**
      * Purchase with PESSIMISTIC locking
+     *
+     *
      * Transaction ensures atomicity of stock check + decrement + order creation
      */
     @Transactional
@@ -109,6 +122,35 @@ public class OrderService {
 
         return PurchaseResponse.failure("Purchase failed after retries");
     }
+
+
+    // purchase with REDIS
+
+   // no  @Transactional as we do not lock db connection for redis
+    public PurchaseResponse purchaseWithRedis(PurchaseRequest request) {
+       try {
+           Long remainingStock = redisStockService.decrementStock(
+                   request.getProductId(),
+                   request.getQuantity()
+           );
+
+           if (remainingStock < 0) {
+               // Safely routes to the newly separated proxy
+               orderTransactionService.saveFailedOrder(request);
+               return PurchaseResponse.failure("Insufficient stock");
+           }
+
+           // Safely routes to the newly separated proxy
+           return orderTransactionService.commitToDatabase(request);
+
+       } catch (Exception e) {
+           redisStockService.incrementStock(request.getProductId(), request.getQuantity());
+           orderTransactionService.saveFailedOrder(request);
+           return PurchaseResponse.failure("Purchase failed: " + e.getMessage());
+       }
+    }
+
+
 
     //Get user's order history
     public List<Order> getUserOrders(Long userId) {

@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import com.shubham.flashsale.service.RedisStockService;
 
 import javax.lang.model.element.ModuleElement;
 import java.util.List;
@@ -19,10 +20,17 @@ public class ProductController {
     @Autowired
     private ProductService productService;
 
+    @Autowired
+    private RedisStockService redisStockService;
+
     // Create product
     @PostMapping
     public ResponseEntity<Product> createProduct(@Valid @RequestBody ProductRequest request) {
         Product product = productService.createProduct(request);
+
+        // initialize stock in Redis when product created
+        redisStockService.initializeStock(product.getId(), product.getTotalStock());
+
         return new ResponseEntity<>(product, HttpStatus.CREATED);
     }
 

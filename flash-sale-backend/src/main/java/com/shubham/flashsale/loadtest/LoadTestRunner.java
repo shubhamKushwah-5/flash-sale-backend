@@ -35,19 +35,27 @@ public class LoadTestRunner {
             Long productId,
             int threadCount,
             int requestsPerThread,
-            boolean usePessimistic) {
+            String strategy) {
 
-        String lockingType = usePessimistic ? "Pessimistic" : "Optimistic";
-        String endpoint = usePessimistic ? "/api/orders/purchase-pessimistic" :"/api/orders/purchase-optimistic";
+        String endpoint;
+        if (strategy.equals("PESSIMISTIC")) {
+            endpoint = "/api/orders/purchase-pessimistic";
+        } else if (strategy.equals("OPTIMISTIC")) {
+            endpoint = "/api/orders/purchase-optimistic";
+        } else if (strategy.equals("REDIS")) {
+            endpoint = "/api/orders/purchase-redis";
+        } else {
+            throw new IllegalArgumentException("Unknown strategy: " + strategy);
+        }
 
         int totalRequests = threadCount * requestsPerThread;
         LoadTestResult result = new LoadTestResult(
-                lockingType + " Locking Test",
+                strategy + " Test",
                 totalRequests,
                 threadCount
         );
 
-        System.out.println("\n Starting Load Test: " + lockingType);
+        System.out.println("\n Starting Load Test: " + strategy);
         System.out.println("    Threads: " + threadCount);
         System.out.println("    Requests per thread: " + requestsPerThread);
         System.out.println("    Total requests: " + totalRequests);
@@ -61,8 +69,9 @@ public class LoadTestRunner {
         CountDownLatch completionLatch = new CountDownLatch(threadCount);
 
         // Submit tasks to thread pool
-        for (int i = 0; i< threadCount; i++) {
+        for (int i = 0; i < threadCount; i++) {
             final int userId = 1000 + i;  //Unique user ID per thread
+            final String targetEndpoint = endpoint; // Effectively final for lambda
 
             executor.submit(() -> {
                 try {
@@ -70,17 +79,17 @@ public class LoadTestRunner {
                     startLatch.await();
 
                     // Each thread makes multiple requests
-                    for (int j = 0 ; j< requestsPerThread; j++){
+                    for (int j = 0 ; j < requestsPerThread; j++){
                         makePurchaseRequest(
                                 productId,
                                 userId,
-                                endpoint,
+                                targetEndpoint,
                                 result
                         );
                     }
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
-                }finally {
+                } finally {
                     completionLatch.countDown();
                 }
             });
@@ -98,7 +107,7 @@ public class LoadTestRunner {
             completionLatch.await();
             result.setTestEndTime(System.currentTimeMillis());
 
-            System.out.println("All threads completed");
+            System.out.println("All threads completed.");
 
         } catch (InterruptedException e ) {
             Thread.currentThread().interrupt();
@@ -157,76 +166,154 @@ public class LoadTestRunner {
         }
     }
 
-    // Main mehtod to run tests
-
     public static void main(String[] args) {
-        String baseUrl = "http://localhost:8080";     //"https://flash-sale-backend-hd99.onrender.com";
+        String baseUrl = "http://localhost:8080";
         LoadTestRunner runner = new LoadTestRunner(baseUrl);
 
         System.out.println("\n" + "=".repeat(80));
         System.out.println("FLASH SALE CONCURRENCY LOAD TEST");
         System.out.println("=".repeat(80));
 
-        /// Test parameters
-        Long productId = 8L; // this product id should have 500 stock
         int threadCount = 1000;
-        int requestsPerThread = 2;// so total 2000 request for 500 stock
+        int requestsPerThread = 2; // Total 2000 requests per test
+
+        System.out.println("\n[SETUP REQUIRED]");
+        System.out.println("Please ensure you have created 3 products via your POST /api/products endpoint.");
+        System.out.println("Product 1: ID=1, Stock=500 (For Pessimistic)");
+        System.out.println("Product 2: ID=2, Stock=500 (For Optimistic)");
+        System.out.println("Product 3: ID=3, Stock=500 (For Redis)");
+        System.out.println("\nPress Enter to begin the tests...");
 
         try {
             System.in.read();
         } catch (Exception e) {
-             // ignore
+            // ignore
         }
 
         // Test 1: Pessimistic Locking
         LoadTestResult pessimisticResult = runner.runTest(
-                productId,
+                1L, // Make sure this product ID exists
                 threadCount,
                 requestsPerThread,
-                true
+                "PESSIMISTIC"
         );
         pessimisticResult.printResults();
 
-        // wait between tests
-        System.out.println("\n Waiting 5 seconds before next test...");
-        try {
-            Thread.sleep(5000);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
+        System.out.println("\nWaiting 5 seconds before next test...");
+        try { Thread.sleep(5000); } catch (InterruptedException e) { Thread.currentThread().interrupt(); }
 
-        // Create new product fo second test
-        System.out.println("\n Create a new product with ID = 2 and stock = 500 for optimistic test");
-        System.out.println("Press Enter to continue...");
-        try  {
-            System.in.read();
-        } catch (Exception e) {
-            // Ignore
-        }
-
-        // Test 2 : Optimistic locking
+        // Test 2: Optimistic Locking
         LoadTestResult optimisticResult = runner.runTest(
-                9l,
+                2L, // Make sure this product ID exists
                 threadCount,
                 requestsPerThread,
-                false
+                "OPTIMISTIC"
         );
         optimisticResult.printResults();
 
+        System.out.println("\nWaiting 5 seconds before next test...");
+        try { Thread.sleep(5000); } catch (InterruptedException e) { Thread.currentThread().interrupt(); }
+
+        // Test 3: Redis Atomic Decanting
+        LoadTestResult redisResult = runner.runTest(
+                3L, // Make sure this product ID exists
+                threadCount,
+                requestsPerThread,
+                "REDIS"
+        );
+        redisResult.printResults();
+
         // Compare results
         System.out.println("\n" + "=".repeat(80));
-        System.out.println("COMPARISON: Pessimistic vs Optimistic Locking");
+        System.out.println("FINAL COMPARISON: MySQL Locking vs Redis Memory");
         System.out.println("=".repeat(80));
-        System.out.println("\nPessimistic Locking:");
+
+        System.out.println("\nPessimistic Locking (MySQL ROW LOCK):");
         System.out.println("  Success: " + pessimisticResult.getSuccessCount());
         System.out.println("  Failure: " + pessimisticResult.getFailureCount());
 
-        System.out.println("\nOptimistic Locking:");
+        System.out.println("\nOptimistic Locking (MySQL @Version):");
         System.out.println("  Success: " + optimisticResult.getSuccessCount());
         System.out.println("  Failure: " + optimisticResult.getFailureCount());
 
+        System.out.println("\nRedis Atomic Decanting (In-Memory):");
+        System.out.println("  Success: " + redisResult.getSuccessCount());
+        System.out.println("  Failure: " + redisResult.getFailureCount());
+
         System.out.println("\n" + "=".repeat(80));
     }
+
+
+    // Main mehtod to run tests
+
+//    public static void main(String[] args) {
+//        String baseUrl = "http://localhost:8080";     //"https://flash-sale-backend-hd99.onrender.com";
+//        LoadTestRunner runner = new LoadTestRunner(baseUrl);
+//
+//        System.out.println("\n" + "=".repeat(80));
+//        System.out.println("FLASH SALE CONCURRENCY LOAD TEST");
+//        System.out.println("=".repeat(80));
+//
+//        /// Test parameters
+//        Long productId = 8L; // this product id should have 500 stock
+//        int threadCount = 1000;
+//        int requestsPerThread = 2;// so total 2000 request for 500 stock
+//
+//        try {
+//            System.in.read();
+//        } catch (Exception e) {
+//             // ignore
+//        }
+//
+//        // Test 1: Pessimistic Locking
+//        LoadTestResult pessimisticResult = runner.runTest(
+//                productId,
+//                threadCount,
+//                requestsPerThread,
+//                true
+//        );
+//        pessimisticResult.printResults();
+//
+//        // wait between tests
+//        System.out.println("\n Waiting 5 seconds before next test...");
+//        try {
+//            Thread.sleep(5000);
+//        } catch (InterruptedException e) {
+//            Thread.currentThread().interrupt();
+//        }
+//
+//        // Create new product fo second test
+//        System.out.println("\n Create a new product with ID = 2 and stock = 500 for optimistic test");
+//        System.out.println("Press Enter to continue...");
+//        try  {
+//            System.in.read();
+//        } catch (Exception e) {
+//            // Ignore
+//        }
+//
+//        // Test 2 : Optimistic locking
+//        LoadTestResult optimisticResult = runner.runTest(
+//                9l,
+//                threadCount,
+//                requestsPerThread,
+//                false
+//        );
+//        optimisticResult.printResults();
+//
+//        // Compare results
+//        System.out.println("\n" + "=".repeat(80));
+//        System.out.println("COMPARISON: Pessimistic vs Optimistic Locking");
+//        System.out.println("=".repeat(80));
+//        System.out.println("\nPessimistic Locking:");
+//        System.out.println("  Success: " + pessimisticResult.getSuccessCount());
+//        System.out.println("  Failure: " + pessimisticResult.getFailureCount());
+//
+//        System.out.println("\nOptimistic Locking:");
+//        System.out.println("  Success: " + optimisticResult.getSuccessCount());
+//        System.out.println("  Failure: " + optimisticResult.getFailureCount());
+//
+//        System.out.println("\n" + "=".repeat(80));
+//    }
 
 //    public static void main(String[] args) {
 //        // PRODUCTION TEST - lighter load

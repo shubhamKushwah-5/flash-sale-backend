@@ -8,12 +8,16 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import com.shubham.flashsale.service.RedisStockService;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/orders")
 public class OrderController {
+
+    @Autowired
+    private RedisStockService redisStockService;
 
     @Autowired
     private OrderService orderService;
@@ -51,6 +55,25 @@ public class OrderController {
             return ResponseEntity.badRequest().body(response);
         }
     }
+
+    /**
+     * Purchase with Redis atomic decrement
+     * Fastest - no DB lock contention
+     */
+
+    @PostMapping("/purchase-redis")
+    public ResponseEntity<PurchaseResponse> purchaseRedis(
+            @Valid @RequestBody PurchaseRequest request){
+
+        PurchaseResponse response = orderService.purchaseWithRedis(request);
+
+        if(response.isSuccess()){
+            return ResponseEntity.ok(response);
+        }else{
+            return ResponseEntity.badRequest().body(response);
+        }
+    }
+
 
     /**
      * Get user's order history

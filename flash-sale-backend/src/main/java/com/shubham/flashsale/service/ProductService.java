@@ -73,5 +73,9 @@ public class ProductService {
         return true;
     }
 
+    public Product saveProduct(Product product) {
+        return productRepository.save(product);
+    }
+
 
 }
