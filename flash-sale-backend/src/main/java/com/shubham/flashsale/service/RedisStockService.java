@@ -1,9 +1,13 @@
 package com.shubham.flashsale.service;
 
 import com.shubham.flashsale.model.Product;
+import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.script.DefaultRedisScript;
 import org.springframework.stereotype.Service;
+
+import java.util.Collections;
 
 @Service
 public class RedisStockService {
@@ -11,38 +15,36 @@ public class RedisStockService {
     @Autowired
     private RedisTemplate<String, String> redisTemplate;
 
-    @Autowired
-    private ProductService productService;
+    private DefaultRedisScript<Long> decrementScript;
+
+    @PostConstruct
+    public void init() {
+        // Lua script: strictly atomic
+        String lua =
+                "if redis.call('exists', KEYS[1]) == 0 then return -1 end " +
+                        "local stock = tonumber(redis.call('get', KEYS[1])) " +
+                        "local qty = tonumber(ARGV[1]) " +
+                        "if stock >= qty then return redis.call('decrby', KEYS[1], qty) " +
+                        "else return -2 end";
+
+        this.decrementScript = new DefaultRedisScript<>(lua, Long.class);
+    }
 
     public Long decrementStock(Long productId, Integer quantity) {
         String key = "product:stock:" + productId;
 
-        // 1. Safe Fallback: Only hit DB if Redis crashed/restarted
-        Boolean hasKey = redisTemplate.hasKey(key);
-        if (Boolean.FALSE.equals(hasKey)) {
-            Product product = productService.getProductById(productId);
-            redisTemplate.opsForValue().setIfAbsent(key, String.valueOf(product.getAvailableStock()));
-        }
-
-        // 2. Atomic Decrement
-        Long remainingStock = redisTemplate.opsForValue().decrement(key, quantity);
-
-        // 3. Null and Oversell Check
-        if (remainingStock == null) {
-            return -1L; // Failsafe if Redis drops connection
-        }
-
-        if (remainingStock < 0) {
-            redisTemplate.opsForValue().increment(key, quantity); // Rollback immediately
-            return -1L;
-        }
-
-        return remainingStock;
+        // Execute the script atomically in Redis
+        return redisTemplate.execute(
+                decrementScript,
+                Collections.singletonList(key),
+                String.valueOf(quantity)
+        );
     }
 
     public void incrementStock(Long productId, Integer quantity) {
         redisTemplate.opsForValue().increment("product:stock:" + productId, quantity);
     }
+
     public void initializeStock(Long productId, Integer stock) {
         String key = "product:stock:" + productId;
         redisTemplate.opsForValue().set(key, String.valueOf(stock));

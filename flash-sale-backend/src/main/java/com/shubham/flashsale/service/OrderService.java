@@ -8,8 +8,6 @@ import com.shubham.flashsale.model.Product;
 import com.shubham.flashsale.repository.OrderRepository;
 import jakarta.persistence.OptimisticLockException;
 import jakarta.transaction.Transactional;
-import org.aspectj.weaver.ast.Or;
-import org.hibernate.validator.internal.util.stereotypes.Lazy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.shubham.flashsale.service.RedisStockService;
@@ -126,28 +124,49 @@ public class OrderService {
 
     // purchase with REDIS
 
-   // no  @Transactional as we do not lock db connection for redis
+    // purchase with REDIS
+    // no @Transactional as we do not lock db connection for redis
     public PurchaseResponse purchaseWithRedis(PurchaseRequest request) {
-       try {
-           Long remainingStock = redisStockService.decrementStock(
-                   request.getProductId(),
-                   request.getQuantity()
-           );
+        Long remainingStock;
 
-           if (remainingStock < 0) {
-               // Safely routes to the newly separated proxy
-               orderTransactionService.saveFailedOrder(request);
-               return PurchaseResponse.failure("Insufficient stock");
-           }
+        // STEP 1: ISOLATED REDIS CALL
+        try {
+            remainingStock = redisStockService.decrementStock(
+                    request.getProductId(),
+                    request.getQuantity()
+            );
+        } catch (Exception e) {
+            // Redis timed out or crashed. Stock was NEVER deducted.
+            // DO NOT roll back. Just log the failure.
+            e.printStackTrace();
 
-           // Safely routes to the newly separated proxy
-           return orderTransactionService.commitToDatabase(request);
 
-       } catch (Exception e) {
-           redisStockService.incrementStock(request.getProductId(), request.getQuantity());
-           orderTransactionService.saveFailedOrder(request);
-           return PurchaseResponse.failure("Purchase failed: " + e.getMessage());
-       }
+            orderTransactionService.saveFailedOrder(request);
+            return PurchaseResponse.failure("System busy (Redis Error). Please try again.");
+        }
+
+        // STEP 2: HANDLE REDIS LOGIC RESULTS
+        if (remainingStock == -1L) {
+            // Cache is missing. Better to reject than crash MySQL with a cache stampede.
+           // orderTransactionService.saveFailedOrder(request);
+            return PurchaseResponse.failure("Stock cache missing for product");
+        } else if (remainingStock == -2L) {
+            // Instant rejection for users who didn't get stock
+            //orderTransactionService.saveFailedOrder(request);
+            return PurchaseResponse.failure("Insufficient stock");
+        }
+
+        // STEP 3: ISOLATED DATABASE CALL
+        // Only the winners who successfully secured stock in Redis make it this far.
+        try {
+            return orderTransactionService.commitToDatabase(request);
+        } catch (Exception e) {
+            // The DB commit failed AFTER stock was successfully acquired in Redis.
+            // NOW it is safe and necessary to rollback the Redis stock.
+            redisStockService.incrementStock(request.getProductId(), request.getQuantity());
+            orderTransactionService.saveFailedOrder(request);
+            return PurchaseResponse.failure("Purchase failed during DB commit: " + e.getMessage());
+        }
     }
 
 
