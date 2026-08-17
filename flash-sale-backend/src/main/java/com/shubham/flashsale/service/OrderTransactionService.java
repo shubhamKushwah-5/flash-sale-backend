@@ -38,6 +38,9 @@ public class OrderTransactionService {
         successOrder.setStatus(OrderStatus.SUCCESS);
 
         Order saved = orderRepository.save(successOrder);
+
+        orderRepository.flush();
+
         return PurchaseResponse.success(saved.getId());
     }
 
@@ -54,7 +57,20 @@ public class OrderTransactionService {
 
 
     @Transactional
-    public PurchaseResponse commitRedisOrder(PurchaseRequest request ){}
+    public PurchaseResponse commitRedisOrder(PurchaseRequest request ){
+        // insert into the database
+        Order successOrder = new Order();
+        successOrder.setProductId(request.getProductId());
+        successOrder.setUserId(request.getUserId());
+        successOrder.setQuantity(request.getQuantity());
+
+
+        successOrder.setTotalPrice(BigDecimal.ZERO);
+        successOrder.setStatus(OrderStatus.SUCCESS);
+
+        Order saved = orderRepository.save(successOrder);
+        return PurchaseResponse.success(saved.getId());
+    }
 
 
 }
