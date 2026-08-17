@@ -163,6 +163,8 @@ public class OrderService {
         } catch (Exception e) {
             // The DB commit failed AFTER stock was successfully acquired in Redis.
             // NOW it is safe and necessary to rollback the Redis stock.
+            System.err.println("REDIS DB COMMIT CRASHED! Exception Type: " + e.getClass().getName());
+            System.err.println("Error Message: " + e.getMessage());
             redisStockService.incrementStock(request.getProductId(), request.getQuantity());
             orderTransactionService.saveFailedOrder(request);
             return PurchaseResponse.failure("Purchase failed during DB commit: " + e.getMessage());

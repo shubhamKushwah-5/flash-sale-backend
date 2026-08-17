@@ -53,4 +53,8 @@ public class OrderTransactionService {
     }
 
 
+    @Transactional
+    public PurchaseResponse commitRedisOrder(PurchaseRequest request ){}
+
+
 }
