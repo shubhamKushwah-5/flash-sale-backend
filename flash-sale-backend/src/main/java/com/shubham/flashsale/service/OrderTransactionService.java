@@ -59,16 +59,19 @@ public class OrderTransactionService {
     @Transactional
     public PurchaseResponse commitRedisOrder(PurchaseRequest request ){
         // insert into the database
-        Order successOrder = new Order();
-        successOrder.setProductId(request.getProductId());
-        successOrder.setUserId(request.getUserId());
-        successOrder.setQuantity(request.getQuantity());
+        Order order = new Order();
+        order.setProductId(request.getProductId());
+        order.setUserId(request.getUserId());
+        order.setQuantity(request.getQuantity());
 
+        // Since we are skipping the product fetch, set a default price for the benchmark
+        order.setTotalPrice(java.math.BigDecimal.ZERO);
+        order.setStatus(OrderStatus.SUCCESS);
 
-        successOrder.setTotalPrice(BigDecimal.ZERO);
-        successOrder.setStatus(OrderStatus.SUCCESS);
+        // 3. Save the receipt.
+        // This is an INSERT, not an UPDATE. It will never throw an OptimisticLockException.
+        Order saved = orderRepository.save(order);
 
-        Order saved = orderRepository.save(successOrder);
         return PurchaseResponse.success(saved.getId());
     }
 

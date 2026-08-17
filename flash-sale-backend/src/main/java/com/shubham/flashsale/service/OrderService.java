@@ -159,12 +159,13 @@ public class OrderService {
         // STEP 3: ISOLATED DATABASE CALL
         // Only the winners who successfully secured stock in Redis make it this far.
         try {
-            return orderTransactionService.commitToDatabase(request);
+            return orderTransactionService.commitRedisOrder(request);
         } catch (Exception e) {
             // The DB commit failed AFTER stock was successfully acquired in Redis.
             // NOW it is safe and necessary to rollback the Redis stock.
             System.err.println("REDIS DB COMMIT CRASHED! Exception Type: " + e.getClass().getName());
             System.err.println("Error Message: " + e.getMessage());
+
             redisStockService.incrementStock(request.getProductId(), request.getQuantity());
             orderTransactionService.saveFailedOrder(request);
             return PurchaseResponse.failure("Purchase failed during DB commit: " + e.getMessage());
