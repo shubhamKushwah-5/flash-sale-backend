@@ -264,8 +264,8 @@
 
                 <button class="btn-green" onclick="triggerPurchase('/api/orders/purchase-redis', 'Redis')">Buy via Redis (Optimal)</button>
                 <div style="display: flex; gap: 10px;">
-                    <button class="btn-secondary" onclick="triggerPurchase('/api/orders/purchase-pessimistic', 'Pessimistic')">Pessimistic Lock</button>
-                    <button class="btn-secondary" onclick="triggerPurchase('/api/orders/purchase-optimistic', 'Optimistic')">Optimistic Lock</button>
+                    <button class="btn-secondary" onclick="triggerPurchase('/api/orders/purchase-pessimistic', 'Pessimistic')">Buy via Pessimistic Lock</button>
+                    <button class="btn-secondary" onclick="triggerPurchase('/api/orders/purchase-optimistic', 'Optimistic')">buy vis Optimistic Lock</button>
                 </div>
             </div>
 
@@ -628,20 +628,39 @@
     }
 
     // ================= FLASH SALE FUNCTIONS =================
+    //async function updateVisualStock() {
+      //  const prodId = document.getElementById('fs-prod-id') ? document.getElementById('fs-prod-id').value : 1;
+        //const start = Date.now();
+        //try {
+          //  const res = await fetch(`${FLASH_URL}/api/products/${prodId}/stock`);
+           // const data = await res.json();
+            //if(res.ok) {
+              //  document.getElementById('ui-avail-stock').innerText = data.availableStock !== undefined ? data.availableStock : '--';
+                //document.getElementById('ui-total-stock').innerText = data.totalStock !== undefined ? data.totalStock : '--';
+                //setAlert("Inventory synced.");
+            //}
+            //logAPI('fs-console', 'GET', `/api/products/${prodId}/stock`, res.status, Date.now() - start, data);
+        //} catch(e) { setAlert("Failed to fetch stock.", true); }
+    //}
+
     async function updateVisualStock() {
-        const prodId = document.getElementById('fs-prod-id') ? document.getElementById('fs-prod-id').value : 1;
-        const start = Date.now();
-        try {
-            const res = await fetch(`${FLASH_URL}/api/products/${prodId}/stock`);
-            const data = await res.json();
-            if(res.ok) {
-                document.getElementById('ui-avail-stock').innerText = data.availableStock !== undefined ? data.availableStock : '--';
-                document.getElementById('ui-total-stock').innerText = data.totalStock !== undefined ? data.totalStock : '--';
-                setAlert("Inventory synced.");
-            }
-            logAPI('fs-console', 'GET', `/api/products/${prodId}/stock`, res.status, Date.now() - start, data);
-        } catch(e) { setAlert("Failed to fetch stock.", true); }
-    }
+    const prodId = document.getElementById('fs-prod-id') ? document.getElementById('fs-prod-id').value : 1;
+    const start = Date.now();
+    try {
+        const res = await fetch(`${FLASH_URL}/api/products/${prodId}/stock`);
+        const data = await res.json();
+        if(res.ok) {
+            // Support whatever field name your backend returns
+            const available = data.availableStock ?? data.stock ?? data.remainingStock ?? data.availableQuantity ?? '--';
+            const total = data.totalStock ?? data.initialStock ?? 500;
+
+            document.getElementById('ui-avail-stock').innerText = available;
+            document.getElementById('ui-total-stock').innerText = total;
+            setAlert("Inventory synced.");
+        }
+        logAPI('fs-console', 'GET', `/api/products/${prodId}/stock`, res.status, Date.now() - start, data);
+    } catch(e) { setAlert("Failed to fetch stock.", true); }
+}
 
     async function triggerPurchase(endpoint, strategy) {
         const prodId = document.getElementById('fs-prod-id').value;
@@ -794,7 +813,7 @@
             exitPrice: exit,
             quantity: 1, // Normalized to 1 for easy P&L math
             strategy: "Portfolio Test",
-            tradeDate: new Date().toISOString().split('T')[0]
+            tradeDate: new Date().toISOString().split('.')[0]
         };
 
         log('j-console', `POST /api/trades (Inserting into MySQL via Spring Data)...`);
