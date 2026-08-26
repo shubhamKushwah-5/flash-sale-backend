@@ -88,6 +88,37 @@
         .modal-content input { width: 100%; padding: 10px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg-main); color: var(--text-main); font-family: var(--font-mono); margin-bottom: 15px;}
         .modal-actions { display: flex; gap: 10px; }
         .modal-actions button { flex: 1; margin: 0; }
+
+
+
+        /* ================= MOBILE RESPONSIVE FIXES ================= */
+        @media (max-width: 768px) {
+            /* Fix Navigation */
+            nav { flex-direction: column; padding: 15px 20px; gap: 15px; }
+            .nav-links { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
+            .nav-links button { margin: 0; font-size: 0.85rem; padding: 5px 10px; }
+
+            /* Fix Profile Header */
+            .profile-header { flex-direction: column; align-items: center; text-align: center; padding: 25px 15px; gap: 20px; }
+            .skills-grid { grid-template-columns: 1fr; gap: 20px; }
+
+            /* Fix Grids & Cards */
+            .grid { grid-template-columns: 1fr !important; }
+            .card { padding: 20px 15px; }
+
+            /* Fix Tables (Allows horizontal scrolling on phones) */
+            .benchmark-table { display: block; overflow-x: auto; white-space: nowrap; font-size: 0.8rem; }
+
+            /* Fix Interactive Dashboard (Flash Sale & Journal) */
+            div[style*="grid-template-columns: 1.5fr 1fr"] { grid-template-columns: 1fr !important; }
+            div[style*="grid-template-columns: 1fr 1.5fr"] { grid-template-columns: 1fr !important; }
+
+            /* Fix Education Card Alignment */
+            .card[style*="justify-content: space-between"] { flex-direction: column; gap: 15px; text-align: center !important; }
+            .card[style*="justify-content: space-between"] div { text-align: center !important; }
+        }
+
+
     </style>
 </head>
 <body>
