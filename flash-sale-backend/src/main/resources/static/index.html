@@ -48,6 +48,9 @@
         .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; margin-bottom: 25px; }
         .card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; padding: 25px; }
 
+        /* Inputs & Form Elements */
+        .form-input { padding: 8px; background: #000; border: 1px solid var(--border); color: #fff; border-radius: 4px; width: 100%; }
+
         /* Buttons */
         button.btn-primary { background: var(--accent-blue); color: #fff; border: none; padding: 11px 18px; border-radius: 6px; cursor: pointer; font-weight: 600; width: 100%; margin-bottom: 10px; transition: 0.2s;}
         button.btn-primary:hover { background: #2563eb; }
@@ -89,36 +92,20 @@
         .modal-actions { display: flex; gap: 10px; }
         .modal-actions button { flex: 1; margin: 0; }
 
-
-
         /* ================= MOBILE RESPONSIVE FIXES ================= */
         @media (max-width: 768px) {
-            /* Fix Navigation */
             nav { flex-direction: column; padding: 15px 20px; gap: 15px; }
             .nav-links { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
             .nav-links button { margin: 0; font-size: 0.85rem; padding: 5px 10px; }
-
-            /* Fix Profile Header */
             .profile-header { flex-direction: column; align-items: center; text-align: center; padding: 25px 15px; gap: 20px; }
             .skills-grid { grid-template-columns: 1fr; gap: 20px; }
-
-            /* Fix Grids & Cards */
             .grid { grid-template-columns: 1fr !important; }
             .card { padding: 20px 15px; }
-
-            /* Fix Tables (Allows horizontal scrolling on phones) */
             .benchmark-table { display: block; overflow-x: auto; white-space: nowrap; font-size: 0.8rem; }
-
-            /* Fix Interactive Dashboard (Flash Sale & Journal) */
-            div[style*="grid-template-columns: 1.5fr 1fr"] { grid-template-columns: 1fr !important; }
-            div[style*="grid-template-columns: 1fr 1.5fr"] { grid-template-columns: 1fr !important; }
-
-            /* Fix Education Card Alignment */
+            div[style*="grid-template-columns: 1.5fr 1fr"], div[style*="grid-template-columns: 1fr 1.5fr"] { grid-template-columns: 1fr !important; }
             .card[style*="justify-content: space-between"] { flex-direction: column; gap: 15px; text-align: center !important; }
             .card[style*="justify-content: space-between"] div { text-align: center !important; }
         }
-
-
     </style>
 </head>
 <body>
@@ -219,24 +206,12 @@
     <div id="flashsale" class="view">
         <h2 class="section-title">Flash Sale Architecture Sandbox & Benchmarks</h2>
 
-        <!-- Video Section -->
-        <!--
-        <div class="card" style="margin-bottom: 30px;">
-            <h3>🎥 90-Second Load Test & Architecture Walkthrough</h3>
-            <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 5px;">Demonstrating the concurrency spike test, terminal metrics, and database verification.</p>
-            <div class="video-container">
-                <iframe src="https://www.youtube.com/embed/7Y1_F9cNT6s" allowfullscreen></iframe>
-            </div>
-        </div>
-        -->
-
         <!-- Video Section (Self-Hosted) -->
         <div class="card" style="margin-bottom: 30px;">
             <h3>🎥 90-Second Load Test & Architecture Walkthrough</h3>
             <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 5px;">Demonstrating the concurrency spike test, terminal metrics, and database verification.</p>
 
             <div style="margin-top: 20px; border-radius: 10px; overflow: hidden; border: 1px solid var(--border); background: #000; display: flex; justify-content: center;">
-                <!-- Replace 'flash-sale-demo.mp4' with your actual filename if different -->
                 <video controls controlslist="nodownload" preload="metadata" style="max-width: 100%; max-height: 500px; width: auto; height: auto;">
                     <source src="/Backend_stress_test.mp4" type="video/mp4">
                     Your browser does not support the video tag. Please update your browser.
@@ -254,18 +229,22 @@
                 <div style="display: flex; gap: 10px; margin-bottom: 15px;">
                     <div style="flex: 1;">
                         <label style="font-size: 0.8rem; color: var(--text-muted);">Product ID</label>
-                        <input type="number" id="fs-prod-id" value="1" style="width: 100%; padding: 8px; border-radius: 4px; background: #000; border: 1px solid var(--border); color: #fff;">
+                        <input type="number" id="fs-prod-id" value="1" class="form-input">
                     </div>
                     <div style="flex: 1;">
                         <label style="font-size: 0.8rem; color: var(--text-muted);">User ID</label>
-                        <input type="number" id="fs-user-id" value="101" style="width: 100%; padding: 8px; border-radius: 4px; background: #000; border: 1px solid var(--border); color: #fff;">
+                        <input type="number" id="fs-user-id" value="101" class="form-input">
+                    </div>
+                    <div style="flex: 0.5;">
+                        <label style="font-size: 0.8rem; color: var(--text-muted);">Qty</label>
+                        <input type="number" id="fs-qty" value="1" class="form-input">
                     </div>
                 </div>
 
                 <button class="btn-green" onclick="triggerPurchase('/api/orders/purchase-redis', 'Redis')">Buy via Redis (Optimal)</button>
                 <div style="display: flex; gap: 10px;">
                     <button class="btn-secondary" onclick="triggerPurchase('/api/orders/purchase-pessimistic', 'Pessimistic')">Buy via Pessimistic Lock</button>
-                    <button class="btn-secondary" onclick="triggerPurchase('/api/orders/purchase-optimistic', 'Optimistic')">buy vis Optimistic Lock</button>
+                    <button class="btn-secondary" onclick="triggerPurchase('/api/orders/purchase-optimistic', 'Optimistic')">Buy via Optimistic Lock</button>
                 </div>
             </div>
 
@@ -278,6 +257,7 @@
                 <div style="font-size: 3rem; font-weight: 700; color: #fff; font-family: var(--font-mono); line-height: 1.2;">
                     <span id="ui-avail-stock">--</span> <span style="color: var(--border);">/</span> <span id="ui-total-stock" style="font-size: 1.5rem; color: var(--text-muted);">--</span>
                 </div>
+                <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 5px;">*Redis purchases skip MySQL updates for speed.</p>
 
                 <div style="display: flex; gap: 10px; width: 100%; margin-top: 20px;">
                     <button class="btn-primary" onclick="updateVisualStock()">Refresh Stock</button>
@@ -290,7 +270,7 @@
         <div class="card" style="margin-bottom: 25px; display: flex; gap: 10px; align-items: flex-end;">
             <div style="flex: 1;">
                 <label style="font-size: 0.8rem; color: var(--text-muted);">Query Target ID (User or Prod)</label>
-                <input type="number" id="fs-query-id" value="1" style="width: 100%; padding: 8px; border-radius: 4px; background: #000; border: 1px solid var(--border); color: #fff;">
+                <input type="number" id="fs-query-id" value="1" class="form-input">
             </div>
             <button class="btn-secondary" style="flex: 1; margin: 0;" onclick="fetchData('/api/products/' + document.getElementById('fs-query-id').value, 'GET Product')">Get Product</button>
             <button class="btn-secondary" style="flex: 1; margin: 0;" onclick="fetchData('/api/orders/user/' + document.getElementById('fs-query-id').value, 'GET User Orders')">Get User Orders</button>
@@ -484,8 +464,8 @@
             <div class="card" id="auth-box">
                 <h3 style="margin-bottom: 15px;">JWT Authentication</h3>
                 <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 15px;">Enter credentials to receive a Bearer token.</p>
-                <input type="text" id="j-user" placeholder="Username" value="guest">
-                <input type="password" id="j-pass" placeholder="Password" value="password123">
+                <input type="text" id="j-user" placeholder="Username" value="guest" class="form-input" style="margin-bottom: 10px;">
+                <input type="password" id="j-pass" placeholder="Password" value="password123" class="form-input" style="margin-bottom: 10px;">
                 <button class="btn-primary" onclick="loginJournal()">Login & Get Token</button>
                 <button class="btn-secondary" onclick="registerJournal()">Register User</button>
             </div>
@@ -495,13 +475,21 @@
                 <h3 style="margin-bottom: 15px;">Authenticated Actions & Stats</h3>
                 <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 15px;">Add a test trade to execute secured persistence.</p>
 
-                <div style="display: flex; gap: 10px; margin-bottom: 10px;">
-                    <input type="text" id="t-symbol" placeholder="Symbol (e.g., AAPL)" value="AAPL" style="padding: 8px; background: #000; border: 1px solid var(--border); color: #fff; border-radius: 4px; flex: 1;">
-                    <input type="number" id="t-pnl" placeholder="P&L (e.g., 150.0)" value="150.0" style="padding: 8px; background: #000; border: 1px solid var(--border); color: #fff; border-radius: 4px; flex: 1;">
-                    <button class="btn-green" style="margin:0; width:auto;" onclick="submitTestTrade()">Submit Trade</button>
+                <!-- Full Trade Input Form -->
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px;">
+                    <input type="text" id="t-symbol" placeholder="Symbol (e.g., AAPL)" value="AAPL" class="form-input">
+                    <select id="t-type" class="form-input">
+                        <option value="BUY">BUY</option>
+                        <option value="SELL">SELL</option>
+                    </select>
+                    <input type="number" id="t-qty" placeholder="Quantity" value="10" class="form-input">
+                    <input type="text" id="t-strategy" placeholder="Strategy" value="Breakout" class="form-input">
+                    <input type="number" id="t-entry" placeholder="Entry Price" value="150.0" class="form-input">
+                    <input type="number" id="t-exit" placeholder="Exit Price" value="155.0" class="form-input">
                 </div>
+                <button class="btn-green" style="margin:0; width:100%; margin-bottom: 20px;" onclick="submitTestTrade()">Submit Trade to Database</button>
 
-                <div class="grid" style="grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; margin-bottom: 0;">
+                <div class="grid" style="grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 0;">
                     <div>
                         <div style="font-size: 0.8rem; color: var(--text-muted);">TOTAL PORTFOLIO P&L</div>
                         <div class="metric" id="j-pnl" style="font-size: 1.5rem; color: var(--accent-green);">$0.00</div>
@@ -511,10 +499,21 @@
                         <div class="metric" id="j-winrate" style="font-size: 1.5rem;">0%</div>
                     </div>
                 </div>
+
+                <!-- Advanced Analytics Metrics Buttons -->
+                <div style="margin-top: 20px; border-top: 1px solid var(--border); padding-top: 15px;">
+                    <h4 style="font-size: 0.9rem; margin-bottom: 10px; color: var(--text-main);">Fetch Advanced API Metrics</h4>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                        <button class="btn-secondary" style="margin:0; font-size: 0.8rem; padding: 8px;" onclick="fetchJournalMetric('/api/trades/stats/best-trade', 'Best Trade')">🏆 Best Trade</button>
+                        <button class="btn-secondary" style="margin:0; font-size: 0.8rem; padding: 8px;" onclick="fetchJournalMetric('/api/trades/stats/worst-trade', 'Worst Trade')">📉 Worst Trade</button>
+                        <button class="btn-secondary" style="margin:0; font-size: 0.8rem; padding: 8px;" onclick="fetchJournalMetric('/api/trades/stats/win-loss', 'Win/Loss Breakdown')">📊 Win/Loss Stats</button>
+                        <button class="btn-secondary" style="margin:0; font-size: 0.8rem; padding: 8px;" onclick="fetchJournalMetric('/api/trades/stats/by-strategy', 'Stats by Strategy')">🎯 By Strategy</button>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <!-- NEW: Recent Trades Data Table -->
+        <!-- Recent Trades Data Table -->
         <h3 style="margin-top: 10px; margin-bottom: 10px; font-size: 1.1rem; color: var(--text-main);">Recent Trades Database Table</h3>
         <table class="benchmark-table" style="margin-bottom: 25px;">
             <thead>
@@ -522,6 +521,7 @@
                 <th>ID</th>
                 <th>Symbol</th>
                 <th>Type</th>
+                <th>Qty</th>
                 <th>Entry</th>
                 <th>Exit</th>
                 <th>Strategy</th>
@@ -529,7 +529,7 @@
             </tr>
             </thead>
             <tbody id="trades-table-body">
-            <tr><td colspan="7" style="text-align:center; color: var(--text-muted);">Login to view secured database entries.</td></tr>
+            <tr><td colspan="8" style="text-align:center; color: var(--text-muted);">Login to view secured database entries.</td></tr>
             </tbody>
         </table>
 
@@ -628,46 +628,31 @@
     }
 
     // ================= FLASH SALE FUNCTIONS =================
-    //async function updateVisualStock() {
-      //  const prodId = document.getElementById('fs-prod-id') ? document.getElementById('fs-prod-id').value : 1;
-        //const start = Date.now();
-        //try {
-          //  const res = await fetch(`${FLASH_URL}/api/products/${prodId}/stock`);
-           // const data = await res.json();
-            //if(res.ok) {
-              //  document.getElementById('ui-avail-stock').innerText = data.availableStock !== undefined ? data.availableStock : '--';
-                //document.getElementById('ui-total-stock').innerText = data.totalStock !== undefined ? data.totalStock : '--';
-                //setAlert("Inventory synced.");
-            //}
-            //logAPI('fs-console', 'GET', `/api/products/${prodId}/stock`, res.status, Date.now() - start, data);
-        //} catch(e) { setAlert("Failed to fetch stock.", true); }
-    //}
-
     async function updateVisualStock() {
-    const prodId = document.getElementById('fs-prod-id') ? document.getElementById('fs-prod-id').value : 1;
-    const start = Date.now();
-    try {
-        const res = await fetch(`${FLASH_URL}/api/products/${prodId}/stock`);
-        const data = await res.json();
-        if(res.ok) {
-            // Support whatever field name your backend returns
-            const available = data.availableStock ?? data.stock ?? data.remainingStock ?? data.availableQuantity ?? '--';
-            const total = data.totalStock ?? data.initialStock ?? 500;
+        const prodId = document.getElementById('fs-prod-id') ? document.getElementById('fs-prod-id').value : 1;
+        const start = Date.now();
+        try {
+            const res = await fetch(`${FLASH_URL}/api/products/${prodId}/stock`);
+            const data = await res.json();
+            if(res.ok) {
+                const available = data.availableStock ?? data.stock ?? data.remainingStock ?? data.availableQuantity ?? '--';
+                const total = data.totalStock ?? data.initialStock ?? 500;
 
-            document.getElementById('ui-avail-stock').innerText = available;
-            document.getElementById('ui-total-stock').innerText = total;
-            setAlert("Inventory synced.");
-        }
-        logAPI('fs-console', 'GET', `/api/products/${prodId}/stock`, res.status, Date.now() - start, data);
-    } catch(e) { setAlert("Failed to fetch stock.", true); }
-}
+                document.getElementById('ui-avail-stock').innerText = available;
+                document.getElementById('ui-total-stock').innerText = total;
+                setAlert("Inventory synced.");
+            }
+            logAPI('fs-console', 'GET', `/api/products/${prodId}/stock`, res.status, Date.now() - start, data);
+        } catch(e) { setAlert("Failed to fetch stock.", true); }
+    }
 
     async function triggerPurchase(endpoint, strategy) {
         const prodId = document.getElementById('fs-prod-id').value;
         const userId = document.getElementById('fs-user-id').value;
+        const qty = document.getElementById('fs-qty').value; // Now reads from quantity field
         setAlert(`Processing via ${strategy}...`);
 
-        const payload = { productId: parseInt(prodId), userId: parseInt(userId), quantity: 1 };
+        const payload = { productId: parseInt(prodId), userId: parseInt(userId), quantity: parseInt(qty) };
         const start = Date.now();
         try {
             const res = await fetch(`${FLASH_URL}${endpoint}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
@@ -675,6 +660,8 @@
             if (res.ok) setAlert(`✅ Purchase successful! Order ID: ${data.orderId || 'N/A'}`);
             else setAlert(`❌ Purchase failed: ${data.message || 'Error'}`, true);
             logAPI('fs-console', 'POST', endpoint, res.status, Date.now() - start, data);
+
+            // Note: Redis purchases intentionally skip MySQL product updates for speed, so UI fetch might not change
             updateVisualStock();
         } catch(e) { setAlert("Network error.", true); }
     }
@@ -730,7 +717,7 @@
                 document.getElementById('stats-box').style.opacity = '1';
                 document.getElementById('stats-box').style.pointerEvents = 'auto';
                 fetchJournalStats();
-                fetchRecentTrades(); // Auto-load trades table
+                fetchRecentTrades();
             } else log('j-console', `Login Failed:`, 'error', data);
         } catch(e) { log('j-console', `Network Error. Is Journal API running?`, 'error'); }
     }
@@ -749,6 +736,25 @@
             const wrRes = await fetch(`${JOURNAL_URL}/api/trades/stats/winrate`, { headers });
             if(wrRes.ok) document.getElementById('j-winrate').innerText = await wrRes.text();
         } catch(e) { log('j-console', 'Failed to fetch analytics.', 'error'); }
+    }
+
+    // New function to fetch advanced metrics for the UI buttons
+    async function fetchJournalMetric(endpoint, name) {
+        if(!jwtToken) { log('j-console', 'Unauthorized: Please login first.', 'error'); return; }
+        log('j-console', `GET ${endpoint} (${name})...`);
+        const start = Date.now();
+        try {
+            const res = await fetch(`${JOURNAL_URL}${endpoint}`, { headers: { 'Authorization': `Bearer ${jwtToken}` } });
+            let data;
+            if (res.headers.get("content-type")?.includes("application/json")) { data = await res.json(); }
+            else { data = await res.text(); }
+            const latency = Date.now() - start;
+            if(res.ok) {
+                log('j-console', `[${latency}ms] ${name} Retrieved:`, 'success', data);
+            } else {
+                log('j-console', `[${latency}ms] Failed to fetch ${name}:`, 'error', data);
+            }
+        } catch(e) { log('j-console', `Network Error: ${e.message}`, 'error'); }
     }
 
     async function fetchRecentTrades() {
@@ -771,24 +777,24 @@
         tbody.innerHTML = '';
 
         if (!trades || trades.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; color: var(--text-muted);">No trades found for this user.</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; color: var(--text-muted);">No trades found for this user.</td></tr>';
             return;
         }
 
-        // Get the 5 most recent trades (assuming ID is sequential)
         const recentTrades = trades.slice(-5).reverse();
 
         recentTrades.forEach(trade => {
             const pnl = (trade.exitPrice - trade.entryPrice) * trade.quantity;
-            const isWin = pnl >= 0;
-            const pnlColor = isWin ? 'var(--accent-green)' : 'var(--accent-red)';
-            const pnlSign = isWin ? '+' : '';
+            const isWin = (trade.type === 'BUY' && pnl >= 0) || (trade.type === 'SELL' && pnl <= 0); // basic logic for display color
+            const pnlColor = pnl >= 0 ? 'var(--accent-green)' : 'var(--accent-red)';
+            const pnlSign = pnl >= 0 ? '+' : '';
 
             const tr = document.createElement('tr');
             tr.innerHTML = `
                 <td>#${trade.id || '-'}</td>
                 <td style="font-weight:bold;">${trade.symbol}</td>
                 <td>${trade.type}</td>
+                <td>${trade.quantity}</td>
                 <td>$${trade.entryPrice.toFixed(2)}</td>
                 <td>$${trade.exitPrice.toFixed(2)}</td>
                 <td>${trade.strategy}</td>
@@ -801,19 +807,22 @@
     async function submitTestTrade() {
         if(!jwtToken) { log('j-console', 'Unauthorized: Please login first.', 'error'); return; }
 
+        // Read all values from the new expanded form
         const symbol = document.getElementById('t-symbol').value;
-        const pnl = parseFloat(document.getElementById('t-pnl').value);
-        const entry = 100.0;
-        const exit = entry + pnl;
+        const type = document.getElementById('t-type').value;
+        const qty = parseInt(document.getElementById('t-qty').value);
+        const entry = parseFloat(document.getElementById('t-entry').value);
+        const exit = parseFloat(document.getElementById('t-exit').value);
+        const strategy = document.getElementById('t-strategy').value;
 
         const payload = {
             symbol: symbol.toUpperCase(),
-            type: pnl >= 0 ? "BUY" : "SELL",
+            type: type,
             entryPrice: entry,
             exitPrice: exit,
-            quantity: 1, // Normalized to 1 for easy P&L math
-            strategy: "Portfolio Test",
-            tradeDate: new Date().toISOString().split('.')[0]
+            quantity: qty,
+            strategy: strategy,
+            tradeDate: new Date().toISOString().split('.')[0] // Sends full LocalDateTime format
         };
 
         log('j-console', `POST /api/trades (Inserting into MySQL via Spring Data)...`);
@@ -831,7 +840,7 @@
             if(res.ok) {
                 log('j-console', `[${latency}ms] Trade saved successfully to database!`, 'success', data);
                 fetchJournalStats();
-                fetchRecentTrades(); // Immediately refresh the table below
+                fetchRecentTrades();
             } else {
                 log('j-console', `[${latency}ms] Failed to save trade:`, 'error', data);
             }
