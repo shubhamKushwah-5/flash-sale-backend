@@ -39,7 +39,7 @@
         .profile-info h1 { font-size: 2.4rem; margin-bottom: 5px; letter-spacing: -1px; }
         .profile-info h2 { font-size: 1.15rem; color: var(--accent-blue); margin-bottom: 15px; font-weight: 500; }
         .profile-info p { color: var(--text-muted); font-size: 0.95rem; margin-bottom: 15px; }
-        .skills-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 15px; border-top: 1px solid var(--border); padding-top: 15px;}
+        .skills-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; margin-top: 15px; border-top: 1px solid var(--border); padding-top: 15px;}
         .skills-col h4 { color: var(--text-main); margin-bottom: 8px; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px;}
         .tag { background: #1e3a8a; color: #bfdbfe; padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: 600; display: inline-block; margin: 0 4px 8px 0;}
 
@@ -111,39 +111,75 @@
             <div class="profile-info">
                 <h1>Shubham Kushwah</h1>
                 <h2>Backend Software Engineer</h2>
-                <p>I am a 2025 B.Tech Computer Science graduate specializing in designing scalable, fault-tolerant backend architectures. I focus on resolving concurrency bottlenecks, optimizing database transactions, and architecting distributed caching systems capable of surviving extreme traffic surges.</p>
+                <p>I design and build high-performance, fault-tolerant distributed systems. I specialize in resolving concurrency bottlenecks, optimizing database transactions, and architecting highly scalable backend infrastructure capable of surviving extreme traffic surges.</p>
 
-                <div class="skills-grid">
+                <div class="skills-grid" style="grid-template-columns: 1fr 1fr 1fr;">
                     <div class="skills-col">
-                        <h4>Core Technologies</h4>
+                        <h4>Core & Frameworks</h4>
                         <span class="tag">Java 21</span>
                         <span class="tag">Spring Boot 3</span>
+                        <span class="tag">Spring Security</span>
                         <span class="tag">RESTful APIs</span>
-                        <span class="tag">Spring Data JPA</span>
+                        <span class="tag">Hibernate / JPA</span>
+                        <span class="tag">JWT Auth</span>
                     </div>
                     <div class="skills-col">
-                        <h4>Infrastructure & Scale</h4>
-                        <span class="tag">Redis (Lua Scripting)</span>
+                        <h4>Data & Architecture</h4>
                         <span class="tag">MySQL 8</span>
+                        <span class="tag">Redis & Lua Scripting</span>
                         <span class="tag">Docker</span>
                         <span class="tag">Oracle Cloud (OCI)</span>
-                        <span class="tag">k6 Load Testing</span>
+                        <span class="tag">Linux System Administration</span>
+                        <span class="tag">Nginx Reverse Proxy</span>
+                    </div>
+                    <div class="skills-col">
+                        <h4>Performance & CS Fundamentals</h4>
+                        <span class="tag">Data Structures & Algorithms</span>
+                        <span class="tag">High-Concurrency Engineering</span>
+                        <span class="tag">System Design</span>
+                        <span class="tag">k6 Load & Stress Testing</span>
                     </div>
                 </div>
             </div>
         </div>
 
-        <h2 class="section-title">Featured Projects</h2>
+        <div style="display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 1px solid var(--border); padding-bottom: 10px; margin: 35px 0 20px 0;">
+            <h2 class="section-title" style="margin: 0; border: none; padding: 0;">Engineering Projects</h2>
+            <span style="color: var(--text-muted); font-size: 0.9rem; font-family: var(--font-mono);">Live Interactive Environments</span>
+        </div>
+
         <div class="grid">
             <div class="card">
-                <h3 style="color:var(--accent-blue); margin-bottom: 10px;">⚡ High-Concurrency Flash Sale Engine</h3>
-                <p style="font-size: 0.95rem; color: var(--text-muted); margin-bottom: 15px;">A distributed backend built to handle 10,000 concurrent virtual users during a 500-stock rush. Resolved MySQL lock contention using atomic Redis Lua scripts and Append-Only persistence.</p>
-                <button class="btn-secondary" onclick="switchView('flashsale')">Open Architecture, Sandbox & Benchmarks →</button>
+                <h3 style="color:var(--accent-blue); margin-bottom: 15px;">⚡ High-Concurrency Flash Sale Engine</h3>
+                <ul style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px; padding-left: 20px; line-height: 1.6;">
+                    <li>Engineered a distributed backend capable of sustaining <strong>100,000 concurrent virtual users (VUs)</strong> during simulated traffic spikes.</li>
+                    <li>Eliminated MySQL pessimistic lock contention and HikariCP pool starvation using atomic <strong>Redis Lua scripting</strong>.</li>
+                    <li>Achieved a peak throughput of <strong>7,500+ requests per second (RPS)</strong> while tuning Linux OS-level networking limits (<code>ulimit -n 650000</code>).</li>
+                </ul>
+                <button class="btn-secondary" onclick="switchView('flashsale')">Open Live Sandbox & Benchmarks →</button>
             </div>
+
             <div class="card">
-                <h3 style="color:var(--accent-blue); margin-bottom: 10px;">📊 Trading Journal Analytics API</h3>
-                <p style="font-size: 0.95rem; color: var(--text-muted); margin-bottom: 15px;">A production financial analytics REST API featuring stateless JWT authentication, complex SQL aggregation for P&L tracking, multi-parameter filtering, and multipart CSV processing.</p>
+                <h3 style="color:var(--accent-blue); margin-bottom: 15px;">📊 Trading Journal Analytics API</h3>
+                <ul style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px; padding-left: 20px; line-height: 1.6;">
+                    <li>Developed a production-ready financial analytics REST API secured by <strong>stateless JWT authentication</strong>.</li>
+                    <li>Implemented complex SQL aggregations for real-time P&L tracking, win-rate calculations, and multi-parameter filtering.</li>
+                    <li>Engineered reliable <strong>multipart CSV parsing</strong> for bulk historical trade imports and media persistence.</li>
+                </ul>
                 <button class="btn-secondary" onclick="switchView('journal')">Open Interactive API Sandbox →</button>
+            </div>
+        </div>
+
+        <h2 class="section-title">Education</h2>
+        <div class="card" style="display: flex; justify-content: space-between; align-items: center; padding: 20px 25px;">
+            <div>
+                <h3 style="margin-bottom: 5px;">Bachelor of Technology in Computer Science & Engineering</h3>
+                <p style="color: var(--text-muted); font-size: 0.95rem; margin: 0;">Graduation Year: 2025</p>
+            </div>
+            <div style="text-align: right;">
+                <a href="/resume.pdf" download="Shubham_Kushwah_Resume.pdf" target="_blank" style="text-decoration: none;">
+                    <button class="btn-primary" style="margin: 0; width: auto;">Download Resume PDF ↓</button>
+                </a>
             </div>
         </div>
     </div>
@@ -153,112 +189,267 @@
         <h2 class="section-title">Flash Sale Architecture Sandbox & Benchmarks</h2>
 
         <!-- Video Section -->
+        <!--
         <div class="card" style="margin-bottom: 30px;">
             <h3>🎥 90-Second Load Test & Architecture Walkthrough</h3>
-            <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 5px;">Demonstrating the 10,000 VU concurrency spike test, terminal metrics, and database verification.</p>
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 5px;">Demonstrating the concurrency spike test, terminal metrics, and database verification.</p>
             <div class="video-container">
-                <!-- Replace VIDEO_ID with your YouTube unlisted or Loom embed ID -->
-                <iframe src="https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ" allowfullscreen></iframe>
+                <iframe src="https://www.youtube.com/embed/7Y1_F9cNT6s" allowfullscreen></iframe>
+            </div>
+        </div>
+        -->
+
+        <!-- Video Section (Self-Hosted) -->
+        <div class="card" style="margin-bottom: 30px;">
+            <h3>🎥 90-Second Load Test & Architecture Walkthrough</h3>
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 5px;">Demonstrating the concurrency spike test, terminal metrics, and database verification.</p>
+
+            <div style="margin-top: 20px; border-radius: 10px; overflow: hidden; border: 1px solid var(--border); background: #000; display: flex; justify-content: center;">
+                <!-- Replace 'flash-sale-demo.mp4' with your actual filename if different -->
+                <video controls controlslist="nodownload" preload="metadata" style="max-width: 100%; max-height: 500px; width: auto; height: auto;">
+                    <source src="/Backend_stress_test.mp4" type="video/mp4">
+                    Your browser does not support the video tag. Please update your browser.
+                </video>
             </div>
         </div>
 
-        <!-- Sandbox Controls -->
-        <div class="grid">
-            <div class="card">
-                <h3>Interactive API Triggers</h3>
-                <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 15px;">Trigger checkout under different locking strategies.</p>
+        <!-- Interactive Dashboard -->
+        <div class="grid" style="grid-template-columns: 1.5fr 1fr;">
 
-                <div style="background: #000; padding: 15px; border-radius: 8px; text-align: center; margin-bottom: 15px; border: 1px solid var(--border);">
-                    <div style="font-size: 0.8rem; color: var(--text-muted);">LIVE PRODUCT 1 STOCK</div>
-                    <div class="metric" id="fs-stock">--</div>
+            <!-- Execution Panel -->
+            <div class="card">
+                <h3 style="margin-bottom: 15px; color: var(--accent-blue);">⚡ Trigger Checkout</h3>
+
+                <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+                    <div style="flex: 1;">
+                        <label style="font-size: 0.8rem; color: var(--text-muted);">Product ID</label>
+                        <input type="number" id="fs-prod-id" value="1" style="width: 100%; padding: 8px; border-radius: 4px; background: #000; border: 1px solid var(--border); color: #fff;">
+                    </div>
+                    <div style="flex: 1;">
+                        <label style="font-size: 0.8rem; color: var(--text-muted);">User ID</label>
+                        <input type="number" id="fs-user-id" value="101" style="width: 100%; padding: 8px; border-radius: 4px; background: #000; border: 1px solid var(--border); color: #fff;">
+                    </div>
                 </div>
 
-                <button class="btn-green" onclick="openPurchaseModal('/api/orders/purchase-redis', 'Redis + Append-Only')">Buy via Redis (Optimized)</button>
-                <button class="btn-secondary" onclick="openPurchaseModal('/api/orders/purchase-pessimistic', 'Pessimistic Lock')">Buy via Pessimistic Lock</button>
-                <button class="btn-secondary" onclick="openPurchaseModal('/api/orders/purchase-optimistic', 'Optimistic Lock')">Buy via Optimistic Lock</button>
-                <button class="btn-secondary" style="border-color: var(--accent-red); color: var(--accent-red); margin-top: 5px;" onclick="resetFlashSale()">Wipe DB & Reset Stock</button>
+                <button class="btn-green" onclick="triggerPurchase('/api/orders/purchase-redis', 'Redis')">Buy via Redis (Optimal)</button>
+                <div style="display: flex; gap: 10px;">
+                    <button class="btn-secondary" onclick="triggerPurchase('/api/orders/purchase-pessimistic', 'Pessimistic')">Pessimistic Lock</button>
+                    <button class="btn-secondary" onclick="triggerPurchase('/api/orders/purchase-optimistic', 'Optimistic')">Optimistic Lock</button>
+                </div>
             </div>
 
-            <div class="card">
-                <h3>Data Retrieval Endpoints</h3>
-                <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 15px;">Inspect live MySQL state.</p>
-                <button class="btn-primary" onclick="fetchEndpoint('/api/products', 'GET All Products')">GET /api/products</button>
-                <button class="btn-primary" onclick="openFetchModal('product')">GET Product By ID</button>
-                <button class="btn-primary" onclick="openFetchModal('stock')">GET Stock By Product ID</button>
-                <button class="btn-primary" onclick="openFetchModal('orders')">GET Orders By User ID</button>
+            <!-- Visual Data Widget -->
+            <div class="card" style="display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; border: 1px solid var(--accent-blue);">
+                <h3 style="margin-bottom: 5px;">Live Inventory Status</h3>
+                <p id="ui-alert" style="font-size: 0.85rem; color: var(--accent-green); height: 20px; margin-bottom: 10px;">System Ready</p>
+
+                <div style="font-size: 0.8rem; color: var(--text-muted); letter-spacing: 1px;">AVAILABLE / TOTAL</div>
+                <div style="font-size: 3rem; font-weight: 700; color: #fff; font-family: var(--font-mono); line-height: 1.2;">
+                    <span id="ui-avail-stock">--</span> <span style="color: var(--border);">/</span> <span id="ui-total-stock" style="font-size: 1.5rem; color: var(--text-muted);">--</span>
+                </div>
+
+                <div style="display: flex; gap: 10px; width: 100%; margin-top: 20px;">
+                    <button class="btn-primary" onclick="updateVisualStock()">Refresh Stock</button>
+                    <button class="btn-secondary" style="color: var(--accent-red); border-color: var(--accent-red);" onclick="resetFlashSale()">Reset DB</button>
+                </div>
             </div>
         </div>
 
-        <!-- Console Box -->
-        <h3 style="margin-bottom: 10px; font-size: 1rem;">Live Server Response Console</h3>
-        <div class="console" id="fs-console">Awaiting user triggers...<br><br></div>
+        <!-- Data Fetching Strip -->
+        <div class="card" style="margin-bottom: 25px; display: flex; gap: 10px; align-items: flex-end;">
+            <div style="flex: 1;">
+                <label style="font-size: 0.8rem; color: var(--text-muted);">Query Target ID (User or Prod)</label>
+                <input type="number" id="fs-query-id" value="1" style="width: 100%; padding: 8px; border-radius: 4px; background: #000; border: 1px solid var(--border); color: #fff;">
+            </div>
+            <button class="btn-secondary" style="flex: 1; margin: 0;" onclick="fetchData('/api/products/' + document.getElementById('fs-query-id').value, 'GET Product')">Get Product</button>
+            <button class="btn-secondary" style="flex: 1; margin: 0;" onclick="fetchData('/api/orders/user/' + document.getElementById('fs-query-id').value, 'GET User Orders')">Get User Orders</button>
+            <button class="btn-secondary" style="flex: 1; margin: 0;" onclick="fetchData('/api/orders/product/' + document.getElementById('fs-query-id').value + '/success-count', 'GET Success Count')">Get Success Count</button>
+        </div>
 
-        <!-- Hard Benchmarking Suite -->
-        <h2 class="section-title">10,000 Concurrent User (VU) Benchmark Results</h2>
-        <p style="color: var(--text-muted);">Benchmarked on Oracle Cloud Infrastructure using distributed k6 load runners against 500 initial units.</p>
+        <!-- Expanded Live Console -->
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+            <h3 style="font-size: 1rem;">Server Response Console</h3>
+            <button style="background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 0.85rem;" onclick="document.getElementById('fs-console').innerHTML=''">[ Clear Console ]</button>
+        </div>
+        <div class="console" id="fs-console" style="height: 450px;">Awaiting connection...<br><br></div>
 
-        <table class="benchmark-table">
+        <!-- ================= BENCHMARKING SUITE ================= -->
+        <h2 class="section-title" style="margin-top: 40px;">High-Concurrency Benchmark Suite</h2>
+        <p style="color: var(--text-muted); margin-bottom: 20px;">
+            Comprehensive stress testing executed on Oracle Cloud Infrastructure (OCI) using distributed k6 load runners. Operating system tuned with <code>ulimit -n 650000</code> to eliminate TCP port exhaustion.
+        </p>
+
+        <!-- Table 1: Spike & Concurrency Limits -->
+        <h3 style="font-size: 1.1rem; color: var(--accent-blue); margin-bottom: 10px;">1. Locking Strategy Showdown & Extreme Spike Tests</h3>
+        <table class="benchmark-table" style="margin-bottom: 30px;">
             <thead>
             <tr>
                 <th>Strategy</th>
-                <th>Success / Sold</th>
-                <th>Failure Rate</th>
+                <th>VUs</th>
                 <th>p(95) Latency</th>
-                <th>Throughput</th>
-                <th>Result / Behavior</th>
+                <th>Peak Throughput</th>
+                <th>Error / Timeout Rate</th>
+                <th>Behavior & Bottleneck Analysis</th>
             </tr>
             </thead>
             <tbody>
             <tr>
-                <td><strong>Optimistic Locking (@Version)</strong></td>
-                <td style="color: var(--accent-red);">80 / 500</td>
-                <td style="color: var(--accent-red);">99.2% (9,920 err)</td>
-                <td>4.82s</td>
+                <td><strong>Optimistic (@Version)</strong></td>
+                <td>10,000</td>
+                <td style="color: var(--accent-red);">5.42s</td>
                 <td>1,297 req/s</td>
-                <td>Failed: Massive row-version collisions.</td>
+                <td style="color: var(--accent-red);">99.2% (Conflicts)</td>
+                <td>Row-version rollback loops caused 9,920 rejected transactions.</td>
             </tr>
             <tr>
-                <td><strong>Pessimistic Locking (Row Lock)</strong></td>
-                <td style="color: var(--accent-yellow);">500 / 500</td>
-                <td>0% (Oversell Safe)</td>
-                <td style="color: var(--accent-red);">32.78s</td>
-                <td>276 req/s</td>
-                <td>Bottleneck: HikariCP connection pool choked.</td>
+                <td><strong>Pessimistic Row Lock</strong></td>
+                <td>25,000</td>
+                <td style="color: var(--accent-red);">58.47s</td>
+                <td>264 req/s</td>
+                <td style="color: var(--accent-yellow);">98.0% (Timeouts)</td>
+                <td>HikariCP pool choked. Severe transaction queuing & timeouts.</td>
             </tr>
             <tr>
-                <td><strong>Redis Lua + Append-Only (Final)</strong></td>
-                <td style="color: var(--accent-green); font-weight: bold;">500 / 500</td>
-                <td style="color: var(--accent-green);">0% Crashes</td>
-                <td style="color: var(--accent-green); font-weight: bold;">1.15s</td>
-                <td style="color: var(--accent-green);">2,723 req/s</td>
-                <td>Optimal: Microsecond in-memory gating.</td>
+                <td><strong>Pessimistic Row Lock</strong></td>
+                <td>50,000</td>
+                <td style="color: var(--accent-red);">59.08s</td>
+                <td>559 req/s</td>
+                <td style="color: var(--accent-yellow);">99.0% (Timeouts)</td>
+                <td>Database connection threads completely exhausted.</td>
+            </tr>
+            <tr>
+                <td><strong>Redis Lua (Optimal)</strong></td>
+                <td>50,000</td>
+                <td style="color: var(--accent-green); font-weight: bold;">3.31s</td>
+                <td>1,994 req/s</td>
+                <td style="color: var(--accent-green);">0% (Clean)</td>
+                <td>Microsecond in-memory gating handled massive spike cleanly.</td>
+            </tr>
+            <tr>
+                <td><strong>Redis Lua (Optimal)</strong></td>
+                <td>75,000</td>
+                <td style="color: var(--accent-green); font-weight: bold;">4.52s</td>
+                <td>3,685 req/s</td>
+                <td style="color: var(--accent-green);">0% (Clean)</td>
+                <td>Sustained high surge volume with sub-5s latency.</td>
+            </tr>
+            <tr>
+                <td><strong>Redis Lua (Max Stress)</strong></td>
+                <td>100,000</td>
+                <td style="color: var(--accent-yellow);">12.68s</td>
+                <td style="color: var(--accent-blue); font-weight: bold;">4,300 req/s</td>
+                <td style="color: var(--accent-green);">0% (Clean)</td>
+                <td>Handled 100k VUs with strict zero-overselling integrity.</td>
             </tr>
             </tbody>
         </table>
+
+        <!-- Table 2: Multi-Stage Ramp-Up Suite -->
+        <h3 style="font-size: 1.1rem; color: var(--accent-green); margin-bottom: 10px;">2. Multi-Stage Load Ramp-Up Progression (Redis Lua)</h3>
+        <table class="benchmark-table" style="margin-bottom: 30px;">
+            <thead>
+            <tr>
+                <th>Ramp-Up Profile</th>
+                <th>Peak VUs</th>
+                <th>Duration</th>
+                <th>p(95) Latency</th>
+                <th>Peak Throughput</th>
+                <th>Stability Summary</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td><strong>1k VU Ramp-Up</strong></td>
+                <td>1,000</td>
+                <td>50s (3 stages)</td>
+                <td>160.45 ms</td>
+                <td>5,220 req/s</td>
+                <td>100% stable baseline; sub-200ms response time.</td>
+            </tr>
+            <tr>
+                <td><strong>5k VU Ramp-Up</strong></td>
+                <td>5,000</td>
+                <td>50s (3 stages)</td>
+                <td style="color: var(--accent-green); font-weight: bold;">71.07 ms</td>
+                <td style="color: var(--accent-green); font-weight: bold;">9,317 req/s</td>
+                <td>Peak speed tier; optimal cache throughput achieved.</td>
+            </tr>
+            <tr>
+                <td><strong>10k VU Ramp-Up</strong></td>
+                <td>10,000</td>
+                <td>50s (3 stages)</td>
+                <td>119.80 ms</td>
+                <td>6,211 req/s</td>
+                <td>Zero dropped connections; clean cache hit rate.</td>
+            </tr>
+            <tr>
+                <td><strong>15k VU Ramp-Up</strong></td>
+                <td>15,000</td>
+                <td>50s (3 stages)</td>
+                <td>324.33 ms</td>
+                <td>6,124 req/s</td>
+                <td>Smooth traffic step-up; no connection lag.</td>
+            </tr>
+            <tr>
+                <td><strong>20k VU Ramp-Up</strong></td>
+                <td>20,000</td>
+                <td>50s (3 stages)</td>
+                <td>161.43 ms</td>
+                <td>5,792 req/s</td>
+                <td>Processed 289,000+ requests with zero oversold stock.</td>
+            </tr>
+            </tbody>
+        </table>
+
+        <!-- Interactive k6 Report Links Matrix -->
+        <h3 style="font-size: 1.1rem; margin-bottom: 10px;">3. Interactive k6 Dashboard Reports</h3>
+        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 15px;">
+            Click any report below to view the interactive Grafana/uPlot execution analytics, latency percentiles, and request distribution:
+        </p>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; margin-bottom: 30px;">
+            <button class="btn-secondary" style="margin: 0;" onclick="window.open('/reports/1k-ramp.html', '_blank')">📊 1k VU Ramp-Up ↗</button>
+            <button class="btn-secondary" style="margin: 0;" onclick="window.open('/reports/5k-ramp.html', '_blank')">📊 5k VU Ramp-Up ↗</button>
+            <button class="btn-secondary" style="margin: 0;" onclick="window.open('/reports/10k-ramp.html', '_blank')">📊 10k VU Ramp-Up ↗</button>
+            <button class="btn-secondary" style="margin: 0;" onclick="window.open('/reports/15k-ramp.html', '_blank')">📊 15k VU Ramp-Up ↗</button>
+            <button class="btn-secondary" style="margin: 0;" onclick="window.open('/reports/20k-ramp.html', '_blank')">📊 20k VU Ramp-Up ↗</button>
+
+            <button class="btn-secondary" style="margin: 0;" onclick="window.open('/reports/graph-redis.html', '_blank')">📊 25k Spike Report ↗</button>
+            <button class="btn-secondary" style="margin: 0;" onclick="window.open('/reports/50k-test.html', '_blank')">📊 50k Spike Report ↗</button>
+            <button class="btn-secondary" style="margin: 0;" onclick="window.open('/reports/75k-test.html', '_blank')">📊 75k Spike Report ↗</button>
+            <button class="btn-secondary" style="margin: 0;" onclick="window.open('/reports/graph-redis-2.html', '_blank')">📊 100k Spike Report ↗</button>
+
+            <button class="btn-secondary" style="margin: 0; border-color: var(--accent-red); color: var(--accent-red);" onclick="window.open('/reports/graph-pessimistic.html', '_blank')">⚠️ Pessimistic Failure ↗</button>
+        </div>
 
         <!-- Screenshot Proof Gallery -->
         <h3 style="margin: 30px 0 10px 0;">k6 Terminal Execution Artifacts</h3>
         <div class="screenshot-grid">
             <div class="screenshot-card">
-                <img src="/images/optimistic-fail.png" alt="Optimistic Failure" onclick="window.open(this.src)">
-                <div class="screenshot-desc"><strong>Optimistic Lock Collision:</strong> 99% requests rejected due to ObjectOptimisticLockingFailureException.</div>
+                <img src="/images/OPTIMISTIC-TEST.png" alt="Optimistic Failure" onclick="window.open(this.src)">
+                <div class="screenshot-desc"><strong>Optimistic Lock Collision (10k VUs):</strong> 99.2% of requests rejected due to ObjectOptimisticLockingFailureException.</div>
             </div>
             <div class="screenshot-card">
-                <img src="/images/pessimistic-slow.png" alt="Pessimistic Slow" onclick="window.open(this.src)">
-                <div class="screenshot-desc"><strong>Pessimistic Lock Queuing:</strong> Correct stock, but severe 32-second transaction latency.</div>
+                <img src="/images/PESSIMISTIC-TEST.png" alt="Pessimistic Slow" onclick="window.open(this.src)">
+                <div class="screenshot-desc"><strong>Pessimistic Lock Queuing (25k VUs):</strong> Severe transaction latency (58.47s) and connection pool exhaustion.</div>
             </div>
             <div class="screenshot-card">
-                <img src="/images/redis-success.png" alt="Redis Success" onclick="window.open(this.src)">
-                <div class="screenshot-desc"><strong>Redis + Append-Only Success:</strong> Flawless 500/500 execution at 2,723 req/s with 1.15s p95.</div>
+                <img src="/images/Screenshot 2026-08-21 213940.png" alt="Redis Success" onclick="window.open(this.src)">
+                <div class="screenshot-desc"><strong>Redis + Append-Only Success (5k VUs):</strong> Peak speed tier running at 9,317 req/s with 71ms p(95) latency.</div>
+            </div>
+            <div class="screenshot-card">
+                <img src="/images/REDIS-TEST-2.png" alt="Redis Success 100k" onclick="window.open(this.src)">
+                <div class="screenshot-desc"><strong>Redis + Append-Only Success (100k VUs):</strong> Handled 100,000 VUs smoothly with OS-level socket tuning.</div>
             </div>
         </div>
     </div>
+
 
     <!-- ================= TRADING JOURNAL VIEW ================= -->
     <div id="journal" class="view">
         <h2 class="section-title">Trading Journal Analytics API</h2>
 
-        <div class="grid">
+        <div class="grid" style="grid-template-columns: 1fr 1.5fr;">
+            <!-- Auth Card -->
             <div class="card" id="auth-box">
                 <h3 style="margin-bottom: 15px;">JWT Authentication</h3>
                 <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 15px;">Enter credentials to receive a Bearer token.</p>
@@ -268,24 +459,53 @@
                 <button class="btn-secondary" onclick="registerJournal()">Register User</button>
             </div>
 
+            <!-- Secured Action Card (Unlocked after login) -->
             <div class="card" id="stats-box" style="opacity: 0.5; pointer-events: none;">
-                <h3 style="margin-bottom: 15px;">Real-Time Aggregations</h3>
-                <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 15px;">Calculated via SQL aggregation endpoints.</p>
-                <div class="grid" style="grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
+                <h3 style="margin-bottom: 15px;">Authenticated Actions & Stats</h3>
+                <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 15px;">Add a test trade to execute secured persistence.</p>
+
+                <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+                    <input type="text" id="t-symbol" placeholder="Symbol (e.g., AAPL)" value="AAPL" style="padding: 8px; background: #000; border: 1px solid var(--border); color: #fff; border-radius: 4px; flex: 1;">
+                    <input type="number" id="t-pnl" placeholder="P&L (e.g., 150.0)" value="150.0" style="padding: 8px; background: #000; border: 1px solid var(--border); color: #fff; border-radius: 4px; flex: 1;">
+                    <button class="btn-green" style="margin:0; width:auto;" onclick="submitTestTrade()">Submit Trade</button>
+                </div>
+
+                <div class="grid" style="grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; margin-bottom: 0;">
                     <div>
-                        <div style="font-size: 0.8rem; color: var(--text-muted);">TOTAL P&L</div>
-                        <div class="metric" id="j-pnl" style="font-size: 1.8rem;">$0.00</div>
+                        <div style="font-size: 0.8rem; color: var(--text-muted);">TOTAL PORTFOLIO P&L</div>
+                        <div class="metric" id="j-pnl" style="font-size: 1.5rem; color: var(--accent-green);">$0.00</div>
                     </div>
                     <div>
                         <div style="font-size: 0.8rem; color: var(--text-muted);">WIN RATE</div>
-                        <div class="metric" id="j-winrate" style="font-size: 1.8rem;">0%</div>
+                        <div class="metric" id="j-winrate" style="font-size: 1.5rem;">0%</div>
                     </div>
                 </div>
-                <button class="btn-primary" onclick="fetchJournalStats()" style="margin-top: 10px;">Refresh Analytics</button>
             </div>
         </div>
 
-        <h3 style="margin-bottom: 10px; font-size: 1rem;">Live Server Response Console</h3>
+        <!-- NEW: Recent Trades Data Table -->
+        <h3 style="margin-top: 10px; margin-bottom: 10px; font-size: 1.1rem; color: var(--text-main);">Recent Trades Database Table</h3>
+        <table class="benchmark-table" style="margin-bottom: 25px;">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Symbol</th>
+                <th>Type</th>
+                <th>Entry</th>
+                <th>Exit</th>
+                <th>Strategy</th>
+                <th>P&L</th>
+            </tr>
+            </thead>
+            <tbody id="trades-table-body">
+            <tr><td colspan="7" style="text-align:center; color: var(--text-muted);">Login to view secured database entries.</td></tr>
+            </tbody>
+        </table>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+            <h3 style="font-size: 1rem;">Server Response Console</h3>
+            <button style="background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 0.85rem;" onclick="document.getElementById('j-console').innerHTML=''">[ Clear Console ]</button>
+        </div>
         <div class="console" id="j-console">Please login to authorize requests...<br><br></div>
     </div>
 </div>
@@ -303,8 +523,8 @@
 </div>
 
 <script>
-    const FLASH_URL = window.location.origin;
-    const JOURNAL_URL = window.location.origin;
+    const FLASH_URL = window.location.origin + "/flashsale";
+    const JOURNAL_URL = window.location.origin + "/journal";
 
     let jwtToken = null;
 
@@ -313,20 +533,7 @@
         document.querySelectorAll('.nav-links button').forEach(b => b.classList.remove('active'));
         document.getElementById(viewId).classList.add('active');
         document.getElementById('nav-' + viewId).classList.add('active');
-        if(viewId === 'flashsale') fetchFlashSaleStock(1);
-    }
-
-    function log(consoleId, msg, type = 'info', jsonData = null) {
-        const box = document.getElementById(consoleId);
-        const time = new Date().toISOString().split('T')[1].split('.')[0];
-        let css = type === 'error' ? 'log-error' : (type === 'success' ? 'log-success' : '');
-
-        let html = `<span class="log-time">[${time}]</span> <span class="${css}">${msg}</span>`;
-        if (jsonData) html += `<pre>${JSON.stringify(jsonData, null, 4)}</pre>`;
-        else html += `<br><br>`;
-
-        box.innerHTML += html;
-        box.scrollTop = box.scrollHeight;
+        if(viewId === 'flashsale') updateVisualStock();
     }
 
     function openModal(title, placeholder, submitCallback) {
@@ -340,74 +547,112 @@
             if(val) { closeModal(); submitCallback(val); }
         };
     }
-
     function closeModal() { document.getElementById('ui-modal').style.display = 'none'; }
 
-    function openPurchaseModal(endpoint, strategy) {
-        openModal(`Execute Purchase (${strategy})`, "Enter User ID (e.g., 101)", (userId) => {
-            triggerFlashSale(endpoint, strategy, 1, userId);
-        });
-    }
 
-    function openFetchModal(type) {
-        if (type === 'product') {
-            openModal("Fetch Product Details", "Enter Product ID (e.g., 1)", (id) => fetchEndpoint(`/api/products/${id}`, `GET Product ${id}`));
-        } else if (type === 'stock') {
-            openModal("Fetch Live Stock", "Enter Product ID (e.g., 1)", (id) => fetchEndpoint(`/api/products/${id}/stock`, `GET Stock for Product ${id}`));
-        } else if (type === 'orders') {
-            openModal("Fetch User Orders", "Enter User ID (e.g., 101)", (id) => fetchEndpoint(`/api/orders/user/${id}`, `GET Orders for User ${id}`));
+    // ================= UI VISUAL HELPER =================
+    function setAlert(msg, isError = false) {
+        const alertBox = document.getElementById('ui-alert');
+        if(alertBox) {
+            alertBox.innerText = msg;
+            alertBox.style.color = isError ? 'var(--accent-red)' : 'var(--accent-green)';
         }
     }
 
-    async function fetchEndpoint(endpoint, name) {
-        log('fs-console', `GET ${endpoint}...`);
+    // ================= HYBRID API LOGGER =================
+    function logAPI(consoleId, method, endpoint, status, latency, jsonData = null) {
+        const box = document.getElementById(consoleId);
+        if(!box) return;
+        const time = new Date().toISOString().split('T')[1].split('.')[0];
+
+        let statusTag = (status === 200 || status === 201) ? `<span style="color: var(--accent-green);">🟢 HTTP ${status}</span>` : `<span style="color: var(--accent-red);">🔴 HTTP ${status}</span>`;
+        let methodColor = method === 'GET' ? '#3b82f6' : (method === 'POST' ? '#10b981' : '#f59e0b');
+
+        let html = `<div style="margin-bottom: 15px; border-bottom: 1px solid #222; padding-bottom: 10px;">`;
+        html += `<span style="color: var(--text-muted);">[${time}]</span> `;
+        html += `<strong style="color: ${methodColor};">${method}</strong> ${endpoint} `;
+        html += `-> ${statusTag} <span style="color: var(--text-muted);">(${latency}ms)</span>`;
+
+        if (jsonData) {
+            html += `<pre style="margin-top: 8px; white-space: pre-wrap; word-wrap: break-word; color: #a6e22e; background: #111; padding: 10px; border-radius: 6px; border: 1px solid #222;">${JSON.stringify(jsonData, null, 2)}</pre>`;
+        }
+        html += `</div>`;
+
+        box.innerHTML += html;
+        box.scrollTop = box.scrollHeight;
+    }
+
+    function log(consoleId, msg, type = 'info', jsonData = null) {
+        const box = document.getElementById(consoleId);
+        if(!box) return;
+        const time = new Date().toISOString().split('T')[1].split('.')[0];
+        let css = type === 'error' ? 'log-error' : (type === 'success' ? 'log-success' : '');
+
+        let html = `<span class="log-time">[${time}]</span> <span class="${css}">${msg}</span>`;
+        if (jsonData) html += `<pre style="margin: 5px 0 10px 0; white-space: pre-wrap; word-wrap: break-word; color: #a6e22e; background: #111; padding: 10px; border-radius: 6px; border: 1px solid #222;">${JSON.stringify(jsonData, null, 4)}</pre>`;
+        else html += `<br><br>`;
+
+        box.innerHTML += html;
+        box.scrollTop = box.scrollHeight;
+    }
+
+    // ================= FLASH SALE FUNCTIONS =================
+    async function updateVisualStock() {
+        const prodId = document.getElementById('fs-prod-id') ? document.getElementById('fs-prod-id').value : 1;
+        const start = Date.now();
+        try {
+            const res = await fetch(`${FLASH_URL}/api/products/${prodId}/stock`);
+            const data = await res.json();
+            if(res.ok) {
+                document.getElementById('ui-avail-stock').innerText = data.availableStock !== undefined ? data.availableStock : '--';
+                document.getElementById('ui-total-stock').innerText = data.totalStock !== undefined ? data.totalStock : '--';
+                setAlert("Inventory synced.");
+            }
+            logAPI('fs-console', 'GET', `/api/products/${prodId}/stock`, res.status, Date.now() - start, data);
+        } catch(e) { setAlert("Failed to fetch stock.", true); }
+    }
+
+    async function triggerPurchase(endpoint, strategy) {
+        const prodId = document.getElementById('fs-prod-id').value;
+        const userId = document.getElementById('fs-user-id').value;
+        setAlert(`Processing via ${strategy}...`);
+
+        const payload = { productId: parseInt(prodId), userId: parseInt(userId), quantity: 1 };
+        const start = Date.now();
+        try {
+            const res = await fetch(`${FLASH_URL}${endpoint}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+            const data = await res.json();
+            if (res.ok) setAlert(`✅ Purchase successful! Order ID: ${data.orderId || 'N/A'}`);
+            else setAlert(`❌ Purchase failed: ${data.message || 'Error'}`, true);
+            logAPI('fs-console', 'POST', endpoint, res.status, Date.now() - start, data);
+            updateVisualStock();
+        } catch(e) { setAlert("Network error.", true); }
+    }
+
+    async function fetchData(endpoint, name) {
         const start = Date.now();
         try {
             const res = await fetch(`${FLASH_URL}${endpoint}`);
-            const data = await res.json();
-            const latency = Date.now() - start;
-            log('fs-console', `[${latency}ms] HTTP ${res.status}:`, res.ok ? 'success' : 'error', data);
-        } catch(e) { log('fs-console', `Network Error: ${e.message}`, 'error'); }
-    }
-
-    async function fetchFlashSaleStock(prodId = 1) {
-        try {
-            const res = await fetch(`${FLASH_URL}/api/products/${prodId}/stock`);
-            if(res.ok) {
-                const data = await res.json();
-                document.getElementById('fs-stock').innerText = data.availableStock !== undefined ? data.availableStock : "--";
-            }
-        } catch(e) { console.error("Stock check failed."); }
-    }
-
-    async function triggerFlashSale(endpoint, strategyName, prodId, userId) {
-        log('fs-console', `POST ${endpoint} (User: ${userId}, Prod: ${prodId})`);
-        const start = Date.now();
-        try {
-            const res = await fetch(`${FLASH_URL}${endpoint}`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ productId: parseInt(prodId), userId: parseInt(userId), quantity: 1 })
-            });
-            const data = await res.json();
-            const latency = Date.now() - start;
-
-            if (res.ok) log('fs-console', `[${latency}ms] HTTP 200 SUCCESS:`, 'success', data);
-            else log('fs-console', `[${latency}ms] HTTP ${res.status} FAILED:`, 'error', data);
-
-            fetchFlashSaleStock(prodId);
-        } catch(e) { log('fs-console', `Error: ${e.message}`, 'error'); }
+            let data;
+            if (res.headers.get("content-type")?.includes("application/json")) { data = await res.json(); }
+            else { data = await res.text(); }
+            logAPI('fs-console', 'GET', endpoint, res.status, Date.now() - start, data);
+            setAlert(`Fetched ${name}`);
+        } catch(e) { setAlert("Data fetch failed.", true); }
     }
 
     async function resetFlashSale() {
-        log('fs-console', 'POST /api/test/reset-all...');
+        setAlert("Resetting database...");
+        const start = Date.now();
         try {
             const res = await fetch(`${FLASH_URL}/api/test/reset-all`, { method: 'POST' });
             const text = await res.text();
-            log('fs-console', text, 'success');
-            fetchFlashSaleStock(1);
-        } catch(e) { log('fs-console', 'Reset failed.', 'error'); }
+            logAPI('fs-console', 'POST', '/api/test/reset-all', res.status, Date.now() - start, text);
+            setAlert("✅ Database wiped and reset.");
+            updateVisualStock();
+        } catch(e) { setAlert("Reset failed.", true); }
     }
+
 
     // ================= TRADING JOURNAL =================
     async function registerJournal() {
@@ -415,15 +660,11 @@
         const p = document.getElementById('j-pass').value;
         log('j-console', `POST /api/auth/register (${u})`);
         try {
-            const res = await fetch(`${JOURNAL_URL}/api/auth/register`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ username: u, password: p, email: u+"@test.com" })
-            });
+            const res = await fetch(`${JOURNAL_URL}/api/auth/register`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username: u, password: p, email: u+"@test.com" }) });
             const data = await res.json();
             if(res.ok) log('j-console', `Registration Success.`, 'success', data);
             else log('j-console', `Registration Failed:`, 'error', data);
-        } catch(e) { log('j-console', `Network Error. Is Journal API running on 8081?`, 'error'); }
+        } catch(e) { log('j-console', `Network Error. Is Journal API running?`, 'error'); }
     }
 
     async function loginJournal() {
@@ -431,11 +672,7 @@
         const p = document.getElementById('j-pass').value;
         log('j-console', `POST /api/auth/login...`);
         try {
-            const res = await fetch(`${JOURNAL_URL}/api/auth/login`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ username: u, password: p })
-            });
+            const res = await fetch(`${JOURNAL_URL}/api/auth/login`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username: u, password: p }) });
             const data = await res.json();
             if(res.ok && data.token) {
                 jwtToken = data.token;
@@ -443,23 +680,112 @@
                 document.getElementById('stats-box').style.opacity = '1';
                 document.getElementById('stats-box').style.pointerEvents = 'auto';
                 fetchJournalStats();
+                fetchRecentTrades(); // Auto-load trades table
             } else log('j-console', `Login Failed:`, 'error', data);
-        } catch(e) { log('j-console', `Network Error. Is Journal API running on 8081?`, 'error'); }
+        } catch(e) { log('j-console', `Network Error. Is Journal API running?`, 'error'); }
     }
 
     async function fetchJournalStats() {
         if(!jwtToken) return;
-        log('j-console', 'GET /api/trades/stats/...');
         const headers = { 'Authorization': `Bearer ${jwtToken}` };
         try {
             const pnlRes = await fetch(`${JOURNAL_URL}/api/trades/stats/total-pnl`, { headers });
-            if(pnlRes.ok) document.getElementById('j-pnl').innerText = "$" + parseFloat(await pnlRes.text()).toFixed(2);
-
+            if(pnlRes.ok) {
+                let pnlValue = parseFloat(await pnlRes.text());
+                let pnlEl = document.getElementById('j-pnl');
+                pnlEl.innerText = "$" + pnlValue.toFixed(2);
+                pnlEl.style.color = pnlValue >= 0 ? "var(--accent-green)" : "var(--accent-red)";
+            }
             const wrRes = await fetch(`${JOURNAL_URL}/api/trades/stats/winrate`, { headers });
             if(wrRes.ok) document.getElementById('j-winrate').innerText = await wrRes.text();
-
-            log('j-console', `Analytics successfully refreshed.`, 'success');
         } catch(e) { log('j-console', 'Failed to fetch analytics.', 'error'); }
+    }
+
+    async function fetchRecentTrades() {
+        if(!jwtToken) return;
+        log('j-console', `GET /api/trades (Fetching table data)...`);
+        const start = Date.now();
+        try {
+            const res = await fetch(`${JOURNAL_URL}/api/trades`, { headers: { 'Authorization': `Bearer ${jwtToken}` } });
+            const data = await res.json();
+            const latency = Date.now() - start;
+            if(res.ok) {
+                log('j-console', `[${latency}ms] Retrieved ${data.length} trades.`, 'success');
+                renderTradesTable(data);
+            }
+        } catch(e) { log('j-console', 'Failed to fetch recent trades.', 'error'); }
+    }
+
+    function renderTradesTable(trades) {
+        const tbody = document.getElementById('trades-table-body');
+        tbody.innerHTML = '';
+
+        if (!trades || trades.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; color: var(--text-muted);">No trades found for this user.</td></tr>';
+            return;
+        }
+
+        // Get the 5 most recent trades (assuming ID is sequential)
+        const recentTrades = trades.slice(-5).reverse();
+
+        recentTrades.forEach(trade => {
+            const pnl = (trade.exitPrice - trade.entryPrice) * trade.quantity;
+            const isWin = pnl >= 0;
+            const pnlColor = isWin ? 'var(--accent-green)' : 'var(--accent-red)';
+            const pnlSign = isWin ? '+' : '';
+
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>#${trade.id || '-'}</td>
+                <td style="font-weight:bold;">${trade.symbol}</td>
+                <td>${trade.type}</td>
+                <td>$${trade.entryPrice.toFixed(2)}</td>
+                <td>$${trade.exitPrice.toFixed(2)}</td>
+                <td>${trade.strategy}</td>
+                <td style="color: ${pnlColor}; font-weight:bold;">${pnlSign}$${pnl.toFixed(2)}</td>
+            `;
+            tbody.appendChild(tr);
+        });
+    }
+
+    async function submitTestTrade() {
+        if(!jwtToken) { log('j-console', 'Unauthorized: Please login first.', 'error'); return; }
+
+        const symbol = document.getElementById('t-symbol').value;
+        const pnl = parseFloat(document.getElementById('t-pnl').value);
+        const entry = 100.0;
+        const exit = entry + pnl;
+
+        const payload = {
+            symbol: symbol.toUpperCase(),
+            type: pnl >= 0 ? "BUY" : "SELL",
+            entryPrice: entry,
+            exitPrice: exit,
+            quantity: 1, // Normalized to 1 for easy P&L math
+            strategy: "Portfolio Test",
+            tradeDate: new Date().toISOString().split('T')[0]
+        };
+
+        log('j-console', `POST /api/trades (Inserting into MySQL via Spring Data)...`);
+        const start = Date.now();
+
+        try {
+            const res = await fetch(`${JOURNAL_URL}/api/trades`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${jwtToken}` },
+                body: JSON.stringify(payload)
+            });
+            const data = await res.json();
+            const latency = Date.now() - start;
+
+            if(res.ok) {
+                log('j-console', `[${latency}ms] Trade saved successfully to database!`, 'success', data);
+                fetchJournalStats();
+                fetchRecentTrades(); // Immediately refresh the table below
+            } else {
+                log('j-console', `[${latency}ms] Failed to save trade:`, 'error', data);
+            }
+        } catch(e) { log('j-console', `Network Error: ${e.message}`, 'error'); }
     }
 </script>
 </body>
