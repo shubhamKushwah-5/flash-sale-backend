@@ -1,44 +1,57 @@
-```
-┌──────────────────────────────────────────────────┐
-│           LOAD TESTING SCRIPT                     │
-│   (1000 threads firing concurrent requests)       │
-└────────────────┬─────────────────────────────────┘
-                 │
-                 ▼
-         ┌───────────────┐
-         │  CONTROLLER   │
-         │ /purchase     │
-         └───────┬───────┘
-                 │
-                 ▼
-         ┌───────────────┐
-         │   SERVICE     │
-         │ @Transactional│
-         └───────┬───────┘
-                 │
-                 ▼
-      ┌──────────────────────┐
-      │    REPOSITORY         │
-      │ @Lock(PESSIMISTIC)    │
-      └──────────┬────────────┘
-                 │
-                 ▼
-      ┌──────────────────────┐
-      │    POSTGRESQL         │
-      │  Product table        │
-      │  (row-level lock)     │
-      └───────────────────────┘
+┌─────────────────────────────────────────────────────────┐
+│                 k6 TEST RUNNER NODE                     │
+│       (100,000 Virtual Users firing concurrently)       │
+│               [Oracle Cloud VCN]                        │
+└───────────────────────────┬─────────────────────────────┘
+                            │ (Internal Network Traffic)
+                            ▼
+                    ┌───────────────┐
+                    │  NGINX PROXY  │ (App Nodes 1 & 2)
+                    └───────┬───────┘
+                            │
+                            ▼
+                    ┌───────────────┐
+                    │  CONTROLLER   │
+                    │/purchase-redis│
+                    └───────┬───────┘
+                            │
+                            ▼
+                    ┌───────────────┐
+                    │    SERVICE    │ (No DB Transaction Yet)
+                    └───────┬───────┘
+                            │
+                            ▼
+                  ┌───────────────────┐
+                  │    REDIS CACHE    │ (State Node 3)
+                  │   (Lua Script)    │ <── THE ATOMIC GATEKEEPER
+                  └─────────┬─────────┘
+                            │ 
+          [If Stock > 0]    │    [If Stock == 0]
+          ┌─────────────────┴──────────────────┐
+          ▼                                    ▼
+  ┌───────────────┐                    ┌───────────────┐
+  │  DB SERVICE   │                    │ FAST REJECTION│
+  │@Transactional │                    │ (No DB Hit)   │
+  └───────┬───────┘                    └───────────────┘
+          │
+          ▼
+  ┌───────────────┐
+  │     MySQL     │ (State Node 3)
+  │ (Insert Order)│
+  └───────────────┘
 
-Request Flow:
-1. Thread 1 → Controller → Service (START TX) 
-              → Repo locks Product row
-              → Check stock, decrement, commit
-              → Thread 1 success
-              
-2. Thread 2 → Controller → Service (START TX)
-              → Repo WAITS for lock
-              → Gets lock after Thread 1 commits
-              → Check stock (now 0), reject
-              → Thread 2 fails
+Request Flow (The DB Shield Pattern):
+1. 100,000 internal VCN requests hit the App Nodes directly and are routed by Nginx.
+2. The requests bypass the database entirely and hit Redis on the State Node.
+3. Redis evaluates the single-threaded Lua Script in microseconds. 
+   -> It atomically checks stock and decrements it.
+4. The 500 "Winners": 
+   -> Receive a success code from Redis.
+   -> Proceed to open a database transaction.
+   -> Perform a simple, lock-free INSERT into the MySQL orders table.
+5. The 99,500 "Losers":
+   -> Receive a SOLD_OUT code from Redis.
+   -> Are instantly rejected without ever opening a database connection.
 
-Result: Serialized access = No race condition
+Result: 
+Absolute data integrity. Zero overselling. Zero HikariCP connection pool starvation. Peak throughput of 9,317 RPS over the internal VCN.
