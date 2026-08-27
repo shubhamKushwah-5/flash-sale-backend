@@ -1,12 +1,12 @@
 # ⚡ Flash Sale Concurrency Engine
 
 <div align="center">
-  <img src="https://img.shields.io/badge/Java%2021-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white" />
-  <img src="https://img.shields.io/badge/Spring%20Boot-6DB33F?style=for-the-badge&logo=spring&logoColor=white" />
-  <img src="https://img.shields.io/badge/Redis-DC382D?style=for-the-badge&logo=redis&logoColor=white" />
-  <img src="https://img.shields.io/badge/MySQL-4479A1?style=for-the-badge&logo=mysql&logoColor=white" />
-  <img src="https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white" />
-  <img src="https://img.shields.io/badge/Oracle%20Cloud-F80000?style=for-the-badge&logo=oracle&logoColor=white" />
+  <img src="https://img.shields.io/badge/Java%2021-20232a?style=flat-square&logo=openjdk&logoColor=white" />
+  <img src="https://img.shields.io/badge/Spring%20Boot-20232a?style=flat-square&logo=spring&logoColor=6DB33F" />
+  <img src="https://img.shields.io/badge/Redis-20232a?style=flat-square&logo=redis&logoColor=DC382D" />
+  <img src="https://img.shields.io/badge/MySQL-20232a?style=flat-square&logo=mysql&logoColor=4479A1" />
+  <img src="https://img.shields.io/badge/Docker-20232a?style=flat-square&logo=docker&logoColor=2496ED" />
+  <img src="https://img.shields.io/badge/Oracle%20Cloud-20232a?style=flat-square&logo=oracle&logoColor=F80000" />
 </div>
 
 <br/>
