@@ -96,14 +96,15 @@ This system evolved through three concurrency control strategies. Each was stres
 Extreme Spike Tests (The 1-Click Flash Sale Rush)
 Simulates a real-world flash sale where all virtual users fire a single purchase request simultaneously at exactly $T = 0$.
 
-Strategy,Spike VUs,Items Sold,Avg Latency,p(95) Latency,Failure & Behavior Analysis
-Optimistic,"25,000",205 / 500,10.19 s,21.08 s,CRITICAL FAILURE. Entity version collisions rejected 99% of threads; failed to sell out inventory.
-Pessimistic,"25,000",500 / 500,37.13 s,56.01 s,Unusable UX; users waited nearly a minute for order responses.
-Redis Lua,"25,000",500 / 500,1.40 s,2.33 s,Sub-3s p(95) response time under 25k concurrent spike.
-Pessimistic,"50,000",500 / 500,19.63 s,59.08 s,Connection pool choked; triggered OS TCP port exhaustion.
-Redis Lua,"50,000",500 / 500,1.60 s,3.31 s,Handled 50k concurrent requests smoothly; zero dropouts.
-Pessimistic,"100,000",500 / 500,13.38 s,55.39 s,Total system lockup; HikariCP exhausted; massive packet loss.
-Redis Lua,"100,000",500 / 500,1.53 s,2.95 s,"Ultimate Target. 4,299 req/s throughput; 0 oversold."
+| Strategy | Spike VUs | Items Sold | Avg Latency | p(95) Latency | Failure & Behavior Analysis |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **Optimistic** | 25,000 | **205 / 500** | 10.19 s | 21.08 s | **CRITICAL FAILURE.** Entity version collisions rejected 99% of threads; failed to sell out inventory. |
+| **Pessimistic** | 25,000 | 500 / 500 | 37.13 s | 56.01 s | Unusable UX; users waited nearly a minute for order responses. |
+| **Redis Lua** | 25,000 | 500 / 500 | 1.40 s | 2.33 s | Sub-3s p(95) response time under 25k concurrent spike. |
+| **Pessimistic** | 50,000 | 500 / 500 | 19.63 s | 59.08 s | Connection pool choked; triggered OS TCP port exhaustion. |
+| **Redis Lua** | 50,000 | 500 / 500 | 1.60 s | 3.31 s | Handled 50k concurrent requests smoothly; zero dropouts. |
+| **Pessimistic** | 100,000 | 500 / 500 | 13.38 s | 55.39 s | Total system lockup; HikariCP exhausted; massive packet loss. |
+| **Redis Lua** | **100,000** | **500 / 500** | **1.53 s** | **2.95 s** | **Ultimate Target.** 4,299 req/s throughput; 0 oversold. |
 
 | Metric | Redis Lua Architecture | MySQL Pessimistic Locking |
 | :--- | :--- | :--- |
