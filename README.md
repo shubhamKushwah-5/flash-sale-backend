@@ -23,6 +23,48 @@ The system is deployed on a distributed 4-node **Oracle Cloud Infrastructure (OC
 *   **App Tier (2 Nodes):** 8 OCPUs, 32GB RAM each. Running the Spring Boot application behind an Nginx reverse proxy.
 *   **State Tier (1 Node):** 16 OCPUs, 64GB RAM. Hosting MySQL and Redis containers. 
 *   **Test Runner (1 Node):** 8 OCPUs, 32GB RAM. Dedicated entirely to running distributed k6 load tests to prevent local network bottlenecks.
+
+  ```text
+┌─────────────────────────────────────────────────────────┐
+│                 k6 TEST RUNNER NODE                     │
+│       (100,000 Virtual Users firing concurrently)       │
+│               [Oracle Cloud VCN]                        │
+└───────────────────────────┬─────────────────────────────┘
+                            │ (Internal Network Traffic)
+                            ▼
+                    ┌───────────────┐
+                    │  NGINX PROXY  │ (App Nodes 1 & 2)
+                    └───────┬───────┘
+                            │
+                            ▼
+                    ┌───────────────┐
+                    │  CONTROLLER   │
+                    │/purchase-redis│
+                    └───────┬───────┘
+                            │
+                            ▼
+                  ┌───────────────────┐
+                  │    REDIS CACHE    │ (State Node 3)
+                  │   (Lua Script)    │ <── ATOMIC INVENTORY GATEKEEPER
+                  └─────────┬─────────┘
+                            │ 
+          [If Stock > 0]    │    [If Stock == 0]
+          ┌─────────────────┴──────────────────┐
+          ▼                                    ▼
+  ┌───────────────┐                    ┌───────────────┐
+  │  DB SERVICE   │                    │ FAST REJECTION│
+  │@Transactional │                    │ (0ms DB Time) │
+  └───────┬───────┘                    └───────────────┘
+          │
+          ▼
+  ┌───────────────┐
+  │     MySQL     │ (State Node 3)
+  │ (Insert Order)│
+  └───────────────┘
+
+```
+
+
 *   **Networking:** Instances communicate over a private Virtual Cloud Network (VCN). Public traffic is routed through Cloudflare to an OCI Flexible Load Balancer (120 Mbps limit), with strictly configured `iptables` allowing only port 80/443 ingress.
 
 ---
@@ -36,7 +78,7 @@ This system evolved through three concurrency control strategies. Each was stres
 ### 1. Pessimistic Locking (Row-Level DB Lock)
 - **Mechanism:** Used `PESSIMISTIC_WRITE` via Spring Data JPA (`SELECT ... FOR UPDATE`).
 - **Result:** Prevented overselling, but forced threads to wait in line, causing catastrophic HikariCP connection pool starvation.
-- **Bottleneck:** At 10,000 VUs, throughput dropped to 276 RPS. At 50,000+ VUs, average latency degraded to 79 seconds, crashing the server.
+- **Bottleneck:** At 10,000 VUs, throughput dropped to 276 RPS. At 50,000+ VUs, average latency degraded to 79 seconds, dropping tens of thousands of requests and crashing the server.
 
 ### 2. Optimistic Locking (Entity Versioning)
 - **Mechanism:** Used `@Version` annotations with a retry mechanism to catch `OptimisticLockException`.
@@ -49,6 +91,19 @@ This system evolved through three concurrency control strategies. Each was stres
 ---
 
 ## 📊 Performance & Load Testing Results
+
+📊 Comprehensive Load Test Results
+Extreme Spike Tests (The 1-Click Flash Sale Rush)
+Simulates a real-world flash sale where all virtual users fire a single purchase request simultaneously at exactly $T = 0$.
+
+Strategy,Spike VUs,Items Sold,Avg Latency,p(95) Latency,Failure & Behavior Analysis
+Optimistic,"25,000",205 / 500,10.19 s,21.08 s,CRITICAL FAILURE. Entity version collisions rejected 99% of threads; failed to sell out inventory.
+Pessimistic,"25,000",500 / 500,37.13 s,56.01 s,Unusable UX; users waited nearly a minute for order responses.
+Redis Lua,"25,000",500 / 500,1.40 s,2.33 s,Sub-3s p(95) response time under 25k concurrent spike.
+Pessimistic,"50,000",500 / 500,19.63 s,59.08 s,Connection pool choked; triggered OS TCP port exhaustion.
+Redis Lua,"50,000",500 / 500,1.60 s,3.31 s,Handled 50k concurrent requests smoothly; zero dropouts.
+Pessimistic,"100,000",500 / 500,13.38 s,55.39 s,Total system lockup; HikariCP exhausted; massive packet loss.
+Redis Lua,"100,000",500 / 500,1.53 s,2.95 s,"Ultimate Target. 4,299 req/s throughput; 0 oversold."
 
 | Metric | Redis Lua Architecture | MySQL Pessimistic Locking |
 | :--- | :--- | :--- |
