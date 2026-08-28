@@ -92,9 +92,8 @@ This system evolved through three concurrency control strategies. Each was stres
 
 ## 📊 Performance & Load Testing Results
 
-📊 Comprehensive Load Test Results
-Extreme Spike Tests (The 1-Click Flash Sale Rush)
-Simulates a real-world flash sale where all virtual users fire a single purchase request simultaneously at exactly $T = 0$.
+###📊 Comprehensive Load Test Results
+- **Extreme Spike Tests (The 1-Click Flash Sale Rush) :** Simulates a real-world flash sale where all virtual users fire a single purchase request simultaneously at exactly $T = 0$.
 
 | Strategy | Spike VUs | Items Sold | Avg Latency | p(95) Latency | Failure & Behavior Analysis |
 | :--- | :--- | :--- | :--- | :--- | :--- |
