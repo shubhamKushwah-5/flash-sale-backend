@@ -1,14 +1,13 @@
 # Flash Sale Engine - API Documentation
 
-## Base URL
-**Local:** `http://localhost:8080`  
-**Production:** ` https://flash-sale-backend-hd99.onrender.com`
+## Base URLs
+**Local Development:** `http://localhost:8080`
 
 ---
 
-## Product Endpoints
+## 📦 Product Endpoints
 
-### Create Product
+### 1. Create Product (Setup)
 **POST** `/api/products`
 
 **Request Body:**
@@ -19,50 +18,14 @@
   "stock": 500
 }
 ```
-
 **Response:** `201 Created`
-```json
-{
-  "id": 1,
-  "name": "Concert Ticket - Coldplay",
-  "price": 5000,
-  "totalStock": 500,
-  "availableStock": 500,
-  "version": 0,
-  "createdAt": "2025-03-28T10:30:00"
-}
-```
 
----
-
-### Get All Products
+### 2. Get All Products
 **GET** `/api/products`
 
-**Response:** `200 OK`
-```json
-[
-  {
-    "id": 1,
-    "name": "Concert Ticket - Coldplay",
-    "price": 5000,
-    "totalStock": 500,
-    "availableStock": 450,
-    "version": 50,
-    "createdAt": "2025-03-28T10:30:00"
-  }
-]
-```
+**Response:** `200 OK` (Returns an array of all products and their current stock).
 
----
-
-### Get Product by ID
-**GET** `/api/products/{id}`
-
-**Response:** `200 OK` or `404 Not Found`
-
----
-
-### Check Stock
+### 3. Check Specific Product Stock
 **GET** `/api/products/{id}/stock`
 
 **Response:** `200 OK`
@@ -75,144 +38,61 @@
 
 ---
 
-## Order Endpoints
+## 🛒 Order Endpoints
 
-### Purchase with Pessimistic Locking
-**POST** `/api/orders/purchase-pessimistic`
+### 1. Purchase Ticket (Redis Optimized - HOT PATH)
+**POST** `/api/orders/purchase-redis`
 
-**Use Case:** Flash sales, high-contention scenarios
+*Use Case: Extreme Flash Sales. Uses Lua scripting to prevent DB locks.*
 
 **Request Body:**
 ```json
 {
   "productId": 1,
   "userId": 1001,
-  "quantity": 2
+  "quantity": 1
 }
 ```
-
-**Success Response:** `200 OK`
+**Response (Success):** `200 OK`
 ```json
 {
   "success": true,
-  "message": "Purchase successful",
-  "orderId": 1,
-  "status": "SUCCESS"
+  "message": "Order placed successfully",
+  "orderId": 1
 }
 ```
-
-**Failure Response:** `400 Bad Request`
+**Response (Sold Out):** `400 Bad Request`
 ```json
 {
   "success": false,
-  "message": "Insufficient stock",
-  "orderId": null,
-  "status": "FAILED"
+  "message": "Insufficient stock"
 }
 ```
 
----
+### 2. Purchase Ticket (Standard Pessimistic DB Lock)
+**POST** `/api/orders/purchase-pessimistic`
 
-### Purchase with Optimistic Locking
-**POST** `/api/orders/purchase-optimistic`
+*Use Case: Legacy endpoint for load-test benchmarking.*
 
-**Use Case:** Normal shopping, low-contention scenarios
+**Request Body:** Same as above.
 
-**Request/Response:** Same as pessimistic
-
-**Note:** May retry up to 3 times on version conflicts
-
----
-
-### Get User Orders
+### 3. Get User Order History
 **GET** `/api/orders/user/{userId}`
 
-**Response:** `200 OK`
-```json
-[
-  {
-    "id": 1,
-    "productId": 1,
-    "userId": 1001,
-    "quantity": 2,
-    "totalPrice": 10000,
-    "status": "SUCCESS",
-    "orderTime": "2025-03-28T11:00:00"
-  }
-]
-```
+**Response:** `200 OK` (Returns an array of a specific user's successful and failed orders).
 
 ---
 
-### Get Successful Order Count
-**GET** `/api/orders/product/{productId}/success-count`
+## 🛠️ Testing & Utilities
 
-**Response:** `200 OK`
-```json
-450
-```
+### System Reset (For Load Testing)
+**POST** `/api/test/reset-all`
 
----
+*Action: Wipes all database orders, resets MySQL product stock to 500, and synchronizes the Redis cache.*
 
-## Error Responses
+### Postman Collection
+You can test all APIs using the included Postman collection in the repository.
+📁 `[Download Collection](./postman/FlashSaleAPI.postman_collection.json)`
 
-### Product Not Found
-```json
-{
-  "timestamp": "2025-03-28T12:00:00",
-  "message": "Product not found with id: 999",
-  "status": 400
-}
-```
-
-### Validation Error
-```json
-{
-  "timestamp": "2025-03-28T12:00:00",
-  "message": "Quantity must be at least 1",
-  "status": 400
-}
-```
-
----
-
-## Testing with cURL
-```bash
-# Create product
-curl -X POST http://localhost:8080/api/products \
-  -H "Content-Type: application/json" \
-  -d '{"name":"Test Ticket","price":100,"stock":10}'
-
-# Purchase (pessimistic)
-curl -X POST http://localhost:8080/api/orders/purchase-pessimistic \
-  -H "Content-Type: application/json" \
-  -d '{"productId":1,"userId":1,"quantity":2}'
-
-# Check stock
-curl http://localhost:8080/api/products/1/stock
-```
-## Postman Collection
-```
-> You can also test all APIs using the included Postman collection.
-  📁 [Download Collection](./postman/FlashSaleAPI.postman_collection.json)
-  
-  ### How to use:
-1. Open Postman
-2. Click "Import"
-3. Select the downloaded JSON file
-4. Start testing APIs
-```
----
-
-## Load Testing
-
-See [LoadTestRunner.java](src/main/java/com/shubham/flashsale/loadtest/LoadTestRunner.java)
-```bash
-# Run load test
-mvn exec:java -Dexec.mainClass="com.shubham.flashsale.loadtest.LoadTestRunner"
-```
-
-**Test Configuration:**
-- 1000 concurrent threads
-- 2000 total requests
-- Tests both pessimistic and optimistic locking
+### Load Testing
+Distributed load testing was performed using **k6** on Oracle Cloud. Please refer to the main `README.md` for performance benchmarks and architecture details.
