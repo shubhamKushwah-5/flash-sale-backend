@@ -1,2 +1,6 @@
 /mvnw text eol=lf
 *.cmd text eol=crlf
+
+*.html linguist-detectable=false
+*.html linguist-vendored=true
+
