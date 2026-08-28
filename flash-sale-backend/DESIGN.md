@@ -1,103 +1,66 @@
-# Flash Sale Concurrency Engine - Design Document
+# Flash Sale Concurrency Engine - System Design Document
 
-## Problem Statement
-Handle 10,000 users trying to buy 500 concert tickets simultaneously.
-Requirement: ZERO overselling (correctness > performance)
+## 1. Problem Statement
+Handle extreme burst traffic where 100,000 concurrent virtual users attempt to purchase a limited inventory of 500 concert tickets at the exact same millisecond. 
+**Strict Requirement:** ZERO overselling (Correctness and Data Integrity > Raw Throughput).
 
-## Database Schema
+## 2. System Architecture (Oracle Cloud Infrastructure)
+The system utilizes a distributed architecture to separate compute from state:
+* **Edge Routing:** Cloudflare Proxy → OCI Flexible Load Balancer.
+* **Compute Tier (App Nodes):** Java 21 / Spring Boot containers handling request routing and business logic.
+* **State Tier (Data Nodes):** 
+  * **Redis:** Acts as the high-speed atomic gatekeeper for inventory checks.
+  * **MySQL:** Acts as the permanent ACID-compliant system of record.
 
-### Product
-- id (PK, auto-increment)
-- name (String)
-- price (BigDecimal)
-- totalStock (Integer) - original inventory
-- availableStock (Integer) - current inventory
-- version (Long) - for optimistic locking
-- createdAt (Timestamp)
+## 3. Concurrency Strategy Evolution
 
-### Order
-- id (PK, auto-increment)
-- productId (FK → Product)
-- userId (Long) - simple user ID, no auth
-- quantity (Integer)
-- totalPrice (BigDecimal)
-- status (ENUM: SUCCESS, FAILED)
-- orderTime (Timestamp)
+### Phase 1: Pessimistic Locking (MySQL `FOR UPDATE`)
+* **Mechanism:** Serialized database access using row-level locks.
+* **Verdict:** Rejected for production. While it prevented overselling, it caused massive HikariCP connection pool starvation. Latency spiked to 59+ seconds under 50k VUs, eventually exhausting Linux TCP ports.
 
-## API Endpoints
+### Phase 2: Optimistic Locking (JPA `@Version`)
+* **Mechanism:** Lock-free database version checking.
+* **Verdict:** Rejected for high-contention flash sales. Resulted in massive `OptimisticLockException` collisions. Under a 25k VU spike, 99% of requests failed before the inventory could be fully depleted.
 
-### 1. Create Product (Setup)
-POST /api/products
-Body: { name, price, totalStock }
-Response: Product created
+### Phase 3: Redis Lua Scripting (Production Architecture)
+* **Mechanism:** Bypasses database locks entirely. A single-threaded Lua script executes atomically in Redis to check and decrement stock in $<2\text{ms}$.
+* **Verdict:** Flawless. Processed 100,000 concurrent users with a peak throughput of 9,317 RPS. The database is shielded from traffic, only receiving `INSERT` commands for the 500 successful orders.
 
-### 2. Purchase Ticket (Core - Pessimistic)
-POST /api/orders/purchase-pessimistic
-Body: { productId, userId, quantity }
-Logic:
-1. Start transaction
-2. Lock Product row (PESSIMISTIC_WRITE)
-3. Check availableStock >= quantity
-4. If yes: decrement stock, create order, commit
-5. If no: rollback, return error
-   Response: Order created OR Error "Out of stock"
+## 4. Database Schema (MySQL)
 
-### 3. Purchase Ticket (Alternative - Optimistic)
-POST /api/orders/purchase-optimistic
-Body: { productId, userId, quantity }
-Logic:
-1. Read Product (no lock)
-2. Check availableStock >= quantity
-3. Try to decrement with version check
-4. If version mismatch: retry up to 3 times
-5. Create order if successful
-   Response: Order created OR Error
+### Product Table
+- `id` (PK, auto-increment)
+- `name` (VARCHAR)
+- `price` (DECIMAL)
+- `total_stock` (INT) - Baseline inventory
+- `available_stock` (INT) - Tracked for fallback/syncing
+- `version` (BIGINT) - Legacy optimistic lock tracking
 
-### 4. Check Stock
-GET /api/products/{id}/stock
-Response: { availableStock, totalStock }
+### Order Table
+- `id` (PK, auto-increment)
+- `product_id` (FK → Product)
+- `user_id` (BIGINT)
+- `quantity` (INT)
+- `total_price` (DECIMAL)
+- `status` (ENUM: SUCCESS, FAILED)
+- `order_time` (TIMESTAMP)
 
-### 5. Order History
-GET /api/orders/user/{userId}
-Response: List of orders
+## 5. Core API Endpoints
 
-## Concurrency Strategy
+### The Hot Path: Purchase Ticket
+`POST /api/orders/purchase-redis`
+* **Flow:**
+  1. Request hits Spring Boot.
+  2. Spring Boot executes Lua script on Redis (`KEYS[1]: product_id`, `ARGV[1]: quantity`).
+  3. If Lua returns `> 0` (Success): Open DB transaction, insert Order, return 200 OK.
+  4. If Lua returns `-2` (Sold Out): Fast return 400 Bad Request, no DB connection opened.
 
-Primary: Pessimistic Locking
-- Pros: Guaranteed correctness, simple logic
-- Cons: Serializes requests, lower throughput
-- Use case: High contention (flash sales)
+### System Reset (Load Test Preparation)
+`POST /api/test/reset-all`
+* **Flow:** Truncates Order table, resets MySQL Product stock to 500, and synchronizes the Redis cache. Used strictly between k6 load test iterations.
 
-Alternative: Optimistic Locking
-- Pros: Higher throughput for low contention
-- Cons: Retry logic needed, can fail under high load
-- Use case: Normal shopping
-
-## Load Testing Plan
-
-Script: Java program with ExecutorService
-- Thread pool: 1000 threads
-- Each thread: POST /purchase-pessimistic
-- Product: 500 tickets
-- Requests: 2000 attempts (should sell exactly 500)
-
-Metrics to measure:
-- Success count (should be 500)
-- Failure count (should be 1500)
-- Average response time
-- Max response time
-- No overselling verified
-
-## Technology Stack
-- Spring Boot 3.5.2
-- Spring Data JPA
-- PostgreSQL
-- Docker
-- JUnit 5 (testing)
-
-## Future Enhancements 
-- Redis caching for stock reads
-- Message queue for async processing (Kafka/RabbitMQ)
-- Rate limiting per user
-- Payment integration
-- Multiple products in one order
+## 6. Technology Stack
+* **Backend:** Java 21, Spring Boot 3.x, Spring Data JPA
+* **Databases:** MySQL 8.0, Redis
+* **Infrastructure:** Docker, Oracle Cloud (Ampere A1 ARM), Nginx
+* **Testing:** k6 (Distributed Load Testing)
